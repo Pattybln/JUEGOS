@@ -1,838 +1,1252 @@
 <!DOCTYPE html>
 <html lang="es">
- 
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
-    <meta name="description"
-        content="Portafolio de desarrollo de videojuegos - proyectos, juegos educativos y experiencias interactivas.">
- 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portafolio de desarrollo de videojuegos">
     <title>Game Dev Portfolio ♡</title>
- 
-    <!-- =================================
-         GOOGLE FONTS
-    ================================== -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- 
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap%22
-        rel="stylesheet">
- 
-    <!-- =================================
-         BOOTSTRAP ICONS
-    ================================== -->
-<link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
- 
-    <!-- =================================
-         CSS
-    ================================== -->
-<link rel="stylesheet" href="style.css">
- 
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
- 
+
 <body>
- 
+
     <!-- =================================
          CURSOR GLOW
     ================================== -->
- 
+
     <div class="cursor-glow"></div>
- 
- 
+
+
     <!-- =================================
          PARTICULAS
     ================================== -->
- 
+
     <div class="particles">
- 
         <span>✦</span>
-<span>♡</span>
-<span>✧</span>
-<span>✦</span>
-<span>♡</span>
-<span>✧</span>
-<span>✦</span>
-<span>♡</span>
- 
+        <span>♡</span>
+        <span>✧</span>
+        <span>✦</span>
+        <span>♡</span>
+        <span>✧</span>
+        <span>✦</span>
+        <span>♡</span>
     </div>
- 
- 
+
+
     <!-- =================================
          NAVBAR + HERO
     ================================== -->
- 
+
     <header class="hero">
- 
-        <!-- NAVBAR -->
- 
+
         <nav class="navbar">
- 
+
             <a href="#" class="logo">
- 
                 GAME
-<span>DEV</span>
- 
+                <span>DEV</span>
                 <i class="bi bi-heart-fill"></i>
- 
             </a>
- 
- 
+
             <div class="nav-links">
- 
-                <a href="#juegos">
-                    Juegos
-</a>
- 
-                <a href="#sobre-mi">
-                    Sobre el portfolio
-</a>
- 
+                <a href="#juegos">Juegos</a>
+                <a href="#sobre-mi">Sobre el portfolio</a>
             </div>
- 
- 
+
             <a href="#juegos" class="nav-button">
- 
                 <i class="bi bi-controller"></i>
- 
                 Mis juegos
- 
             </a>
- 
+
         </nav>
- 
- 
+
+
         <!-- =================================
-             HERO CONTENT
+             HERO
         ================================== -->
- 
+
         <div class="hero-content">
- 
+
             <div class="hero-text">
- 
+
                 <p class="eyebrow">
- 
                     <i class="bi bi-stars"></i>
- 
                     CREATIVE GAME DEVELOPMENT
- 
                 </p>
- 
- 
+
                 <h1>
- 
                     Pequeños mundos,
- 
                     <br>
- 
                     <em>grandes aventuras.</em>
- 
                 </h1>
- 
- 
+
                 <p class="hero-description">
- 
                     Un pequeño rincón donde guardo mis
                     videojuegos, ideas y proyectos creados
                     con creatividad, curiosidad y mucho
                     cariño.
- 
                 </p>
- 
- 
+
                 <div class="hero-buttons">
- 
+
                     <a href="#juegos" class="main-button">
- 
                         Ver mis juegos
- 
                         <i class="bi bi-arrow-down-right"></i>
- 
                     </a>
- 
- 
-                    <a href="#banner" class="secondary-button">
- 
+
+                    <a href="#sobre-mi" class="secondary-button">
                         <i class="bi bi-stars"></i>
- 
                         Explorar
- 
                     </a>
- 
+
                 </div>
- 
+
             </div>
- 
- 
-            <!-- DECORACIONES -->
- 
+
+
+            <!-- Decoraciones -->
+
             <div class="hero-orbit orbit-one"></div>
- 
             <div class="hero-orbit orbit-two"></div>
- 
- 
+
             <div class="hero-heart">
- 
                 <i class="bi bi-heart-fill"></i>
- 
             </div>
- 
- 
+
             <div class="hero-star">
- 
                 <i class="bi bi-stars"></i>
- 
             </div>
- 
+
         </div>
- 
+
     </header>
- 
- 
+
+
+
     <!-- =================================
          MAIN
     ================================== -->
- 
+
     <main>
- 
- 
+
+
         <!-- =================================
              BANNER
         ================================== -->
- 
+
         <section class="banner reveal" id="banner">
- 
-            <img
-                src="assets/images.png"
-                alt="Banner del portafolio">
- 
+
+            <img src="assets/images.png" alt="Banner del portafolio">
+
             <div class="banner-overlay">
- 
+
                 <span class="banner-badge">
- 
                     <i class="bi bi-controller"></i>
- 
                     GAME DEVELOPER
- 
                 </span>
- 
- 
+
                 <h2>
- 
                     Creando mundos
- 
                     <em>que cobran vida.</em>
- 
                 </h2>
- 
- 
+
                 <p>
- 
                     Explora mis proyectos,
                     descubre mis juegos y
                     conoce mi trabajo.
- 
                 </p>
- 
- 
+
                 <a href="#juegos" class="banner-button">
- 
                     Explorar proyectos
- 
                     <i class="bi bi-arrow-right"></i>
- 
                 </a>
- 
+
             </div>
- 
+
         </section>
- 
- 
+
+
+
+        <!-- =================================
+             SOBRE MÍ
+        ================================== -->
+
+        <section class="about-me-section reveal" id="sobre-mi">
+
+            <div class="about-me-icon">
+
+                <i class="bi bi-person-heart"></i>
+
+            </div>
+
+            <div class="about-me-content">
+
+                <p class="section-label">
+                    <i class="bi bi-person"></i>
+                    SOBRE MÍ
+                </p>
+
+                <h2>
+                    Hola, soy
+                    <em>Patty.</em>
+                </h2>
+
+                <p class="about-me-text">
+
+                    Hola, soy <strong>Patty</strong> y este es mi
+                    portafolio de <strong>Game Development</strong>.
+
+                    Me interesa la <strong>programación, el diseño de
+                    videojuegos y la creación de experiencias
+                    interactivas</strong>. En este repositorio presento
+                    los proyectos y prototipos que desarrollé durante
+                    la asignatura de Game Development.
+
+                    Cada proyecto representa una etapa de aprendizaje
+                    en la que experimenté con diferentes mecánicas,
+                    interfaces, escenarios, sistemas de juego e
+                    interacción con el jugador.
+
+                </p>
+
+
+                <div class="objective-box">
+
+                    <div class="objective-icon">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Mi objetivo</h3>
+
+                        <p>
+                            Seguir desarrollando mis habilidades para
+                            crear videojuegos cada vez más completos,
+                            originales e interactivos.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
         <!-- =================================
              INTRO JUEGOS
         ================================== -->
- 
+
         <section class="games-intro reveal" id="juegos">
- 
+
             <div>
- 
+
                 <p class="section-label">
- 
                     <i class="bi bi-controller"></i>
- 
                     PORTAFOLIO 2026
- 
                 </p>
- 
- 
+
                 <h2>
- 
                     Mis juegos
- 
                     <span>✦</span>
- 
                 </h2>
- 
+
             </div>
- 
- 
+
             <p class="intro-text">
- 
+
                 Una colección de proyectos,
                 experimentos y pequeñas aventuras
-                interactivas.
- 
+                interactivas desarrolladas durante
+                mi proceso de aprendizaje.
+
             </p>
- 
+
         </section>
- 
- 
+
+
+
         <!-- =================================
              GRID DE JUEGOS
         ================================== -->
- 
+
         <section class="games-grid">
- 
- 
-            <!-- =================================
-                 JUEGO 01 - AGUA
-            ================================== -->
- 
+
+
+            <!-- =========================
+                 AGUA
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="AGUA/agua-gameplay.png"
-                        alt="Gameplay de Reto Gota a Gota">
- 
-                    <span class="game-number">
-                        01
-</span>
- 
- 
+
+                    <img src="AGUA/agua-gameplay.png"
+                         alt="Gameplay de AGUA">
+
+                    <span class="game-number">01</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-droplet-fill"></i>
- 
-                        EDUCATIVO
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            VIDEOJUEGO EDUCATIVO
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             AGUA
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Reto Gota a Gota es un videojuego
-                            educativo donde deberás tomar
-                            decisiones rápidas para ahorrar
-                            la mayor cantidad de agua posible,
-                            superar 10 retos y conseguir la
-                            puntuación más alta.
- 
+
+                            Un videojuego educativo centrado en la
+                            importancia del cuidado y ahorro del agua.
+                            El jugador deberá enfrentarse a diferentes
+                            situaciones y tomar decisiones responsables
+                            para evitar el desperdicio de este recurso
+                            esencial.
+
+                            <br><br>
+
+                            A través de sus desafíos, el juego busca
+                            enseñar de una manera entretenida cómo
+                            nuestras acciones cotidianas pueden
+                            contribuir al cuidado del medio ambiente
+                            y a un uso más responsable del agua.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="AGUA/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir Reto Gota a Gota">
- 
+
+                    <a href="AGUA/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir AGUA">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
-            <!-- =================================
-                 JUEGO 02 - TURBOPLATO
-            ================================== -->
- 
+
+
+
+            <!-- =========================
+                 TURBOPLATO
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="TURBOPLATO/turboplato-gameplay.png"
-                        alt="Gameplay de TURBOPLATO">
- 
-                    <span class="game-number">
-                        02
-</span>
- 
- 
+
+                    <img src="TURBOPLATO/turboplato-gameplay.png"
+                         alt="Gameplay de TURBOPLATO">
+
+                    <span class="game-number">02</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-apple"></i>
- 
-                        ARCADE
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            VIDEOJUEGO ARCADE
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             TURBOPLATO
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Un juego arcade de acción rápida
-                            donde tendrás que interactuar
-                            con los alimentos que aparecen
-                            en pantalla. Consigue puntos
-                            seleccionando correctamente
-                            los alimentos saludables antes
-                            de que se acabe el tiempo.
- 
+
+                            Un videojuego dinámico en el que el jugador
+                            deberá enfrentarse a diferentes desafíos
+                            relacionados con los alimentos y la
+                            alimentación saludable.
+
+                            <br><br>
+
+                            El objetivo es reaccionar rápidamente,
+                            superar los obstáculos y completar los
+                            diferentes niveles mientras aprende a
+                            reconocer opciones que contribuyen a una
+                            alimentación más equilibrada.
+
+                            La propuesta combina diversión, velocidad
+                            e interacción para convertir el aprendizaje
+                            sobre alimentación en una experiencia
+                            entretenida.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="TURBOPLATO/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir TURBOPLATO">
- 
+
+                    <a href="TURBOPLATO/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir TURBOPLATO">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
-            <!-- =================================
-                 JUEGO 03 - VIDA EN BALANCE
-            ================================== -->
- 
+
+
+
+            <!-- =========================
+                 VIDA EN BALANCE
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="VIDA-EN-BALANCE/vida-en-balance-gameplay.png"
-                        alt="Gameplay de Vida en Balance">
- 
-                    <span class="game-number">
-                        03
-</span>
- 
- 
+
+                    <img src="VIDA-EN-BALANCE/vida-en-balance-gameplay.png"
+                         alt="Gameplay de Vida en Balance">
+
+                    <span class="game-number">03</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-tree-fill"></i>
- 
-                        AVENTURA
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            AVENTURA · SIMULACIÓN
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             VIDA EN BALANCE
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Explora un mundo interactivo,
-                            administra tus recursos y toma
-                            decisiones que pueden cambiar
-                            el desarrollo de la partida.
-                            Encuentra el equilibrio mientras
-                            descubres el mapa.
- 
+
+                            Una experiencia interactiva basada en la toma
+                            de decisiones y la administración de diferentes
+                            recursos.
+
+                            <br><br>
+
+                            El jugador deberá explorar el escenario,
+                            interactuar con distintas situaciones y
+                            encontrar un equilibrio entre sus decisiones
+                            y sus consecuencias.
+
+                            <br><br>
+
+                            El juego busca mostrar cómo pequeñas
+                            elecciones pueden influir en el desarrollo
+                            de una experiencia, ayudando al jugador a
+                            comprender la importancia de mantener un
+                            equilibrio entre diferentes aspectos de la
+                            vida cotidiana.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="VIDA-EN-BALANCE/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir Vida en Balance">
- 
+
+                    <a href="VIDA-EN-BALANCE/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir Vida en Balance">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
-            <!-- =================================
-                 JUEGO 04 - ZAFARI
-            ================================== -->
- 
+
+
+
+            <!-- =========================
+                 ZAFARI
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="ZAFARI/zafimath-gameplay.png"
-                        alt="Gameplay de Zafimath Adventure">
- 
-                    <span class="game-number">
-                        04
-</span>
- 
- 
+
+                    <img src="ZAFARI/zafimath-gameplay.png"
+                         alt="Gameplay de ZAFARI">
+
+                    <span class="game-number">04</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-calculator"></i>
- 
-                        EDUCATIVO
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            EDUCATIVO · PUZZLE
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             ZAFARI
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Zafimath Adventure combina aventura
-                            y matemáticas. Ayuda al Cuidador
-                            Mateo a liberar animales resolviendo
-                            operaciones mientras avanzas por
-                            10 niveles de la selva.
- 
+
+                            Una aventura educativa ambientada en una
+                            colorida selva donde las matemáticas se
+                            convierten en parte de la exploración.
+
+                            <br><br>
+
+                            El jugador deberá resolver diferentes
+                            operaciones y preguntas mientras recorre
+                            el escenario, descubre animales y supera
+                            distintos desafíos.
+
+                            <br><br>
+
+                            La propuesta combina aprendizaje,
+                            exploración y diversión para practicar
+                            habilidades matemáticas de una forma
+                            interactiva y dinámica, utilizando la
+                            aventura como una forma de motivar al
+                            jugador a seguir avanzando.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="ZAFARI/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir ZAFARI">
- 
+
+                    <a href="ZAFARI/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir ZAFARI">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
-            <!-- =================================
-                 JUEGO 05 - ECOHEROES
-            ================================== -->
- 
+
+
+
+            <!-- =========================
+                 ECOHEROES
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="ECOHEROES/ecoheroes-gameplay.png"
-                        alt="Gameplay de ECOHEROES">
- 
-                    <span class="game-number">
-                        05
-</span>
- 
- 
+
+                    <img src="ECOHEROES/ecoheroes-gameplay.png"
+                         alt="Gameplay de ECOHEROES">
+
+                    <span class="game-number">05</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-leaf-fill"></i>
- 
-                        ECO
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            VIDEOJUEGO EDUCATIVO
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             ECOHEROES
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Conviértete en un Ecohéroe y supera
-                            diferentes desafíos relacionados
-                            con el cuidado del medio ambiente.
-                            Aprende, toma decisiones y ayuda a
-                            construir un mundo más sostenible.
- 
+
+                            Un videojuego educativo que invita al jugador
+                            a convertirse en un héroe del medio ambiente.
+
+                            <br><br>
+
+                            A través de diferentes retos y situaciones,
+                            deberá aprender sobre el cuidado de la
+                            naturaleza, identificar acciones positivas
+                            y tomar decisiones que ayuden a proteger
+                            el entorno.
+
+                            <br><br>
+
+                            El juego combina aprendizaje, interacción
+                            y desafíos para crear conciencia sobre la
+                            importancia de cuidar nuestro planeta y
+                            demostrar que pequeñas acciones pueden
+                            generar cambios positivos en nuestro entorno.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="ECOHEROES/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir ECOHEROES">
- 
+
+                    <a href="ECOHEROES/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir ECOHEROES">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
-            <!-- =================================
-                 JUEGO 06 - UN DÍA DIFERENTE
-            ================================== -->
- 
+
+
+
+            <!-- =========================
+                 UN DÍA DIFERENTE
+            ========================== -->
+
             <article class="game-card reveal">
- 
+
                 <div class="game-image">
- 
-                    <img
-                        src="UN_DIA_DIFERENTE/un-dia-diferente-gameplay.png"
-                        alt="Gameplay de Un Día Diferente">
- 
-                    <span class="game-number">
-                        06
-</span>
- 
- 
+
+                    <img src="UN_DIA_DIFERENTE/un-dia-diferente-gameplay.png"
+                         alt="Gameplay de Un Día Diferente">
+
+                    <span class="game-number">06</span>
+
                     <span class="game-tag">
- 
-                        <i class="bi bi-stars"></i>
- 
-                        AVENTURA
- 
+                        <i class="bi bi-controller"></i>
+                        GAMEPLAY
                     </span>
- 
- 
+
                     <div class="image-shine"></div>
- 
+
                 </div>
- 
- 
+
+
                 <div class="game-info">
- 
+
                     <div>
- 
+
                         <p class="game-type">
-                            AVENTURA · INTERACTIVO
-</p>
- 
- 
+                            VIDEOJUEGO
+                        </p>
+
                         <h3>
                             UN DÍA DIFERENTE
-</h3>
- 
- 
+                        </h3>
+
                         <p class="game-description">
- 
-                            Vive una aventura interactiva en
-                            la que tus decisiones pueden cambiar
-                            la experiencia. Explora diferentes
-                            situaciones y descubre qué puede
-                            hacer diferente cada día.
- 
+
+                            Una experiencia interactiva basada en
+                            situaciones cotidianas donde el jugador
+                            deberá explorar, observar su entorno y
+                            enfrentarse a diferentes acontecimientos.
+
+                            <br><br>
+
+                            El juego busca convertir una situación
+                            aparentemente normal en una pequeña
+                            aventura, utilizando la interacción y
+                            la toma de decisiones para descubrir
+                            nuevas posibilidades.
+
+                            <br><br>
+
+                            A través de la exploración y las diferentes
+                            acciones del jugador, la experiencia busca
+                            demostrar cómo un día común puede convertirse
+                            en algo diferente dependiendo de nuestras
+                            decisiones y de la manera en que interactuamos
+                            con nuestro entorno.
+
                         </p>
- 
+
                     </div>
- 
- 
-                    <a
-                        href="UN_DIA_DIFERENTE/index.html"
-                        class="game-arrow"
-                        aria-label="Abrir Un Día Diferente">
- 
+
+                    <a href="UN_DIA_DIFERENTE/index.html"
+                       class="game-arrow"
+                       aria-label="Abrir Un Día Diferente">
+
                         <i class="bi bi-arrow-up-right"></i>
- 
+
                     </a>
- 
+
                 </div>
- 
+
             </article>
- 
- 
+
         </section>
- 
- 
+
+
+
         <!-- =================================
-             SOBRE EL PORTAFOLIO
+             TECNOLOGÍAS Y HERRAMIENTAS
         ================================== -->
- 
-        <section
-            class="about-section reveal"
-            id="sobre-mi">
- 
-            <div class="about-badge">
- 
-                <i class="bi bi-controller"></i>
- 
-                <span>GAME</span>
- 
-                <span>DEV</span>
- 
-            </div>
- 
- 
-            <div>
- 
+
+        <section class="technologies-section reveal">
+
+            <div class="technologies-header">
+
                 <p class="section-label">
-                    SOBRE EL PORTAFOLIO
-</p>
- 
- 
+                    <i class="bi bi-tools"></i>
+                    TECNOLOGÍAS Y HERRAMIENTAS
+                </p>
+
                 <h2>
- 
-                    Diseñado para
- 
-                    <br>
- 
-                    <em>hacerlos brillar.</em>
- 
+                    Con qué
+                    <em>trabajo.</em>
                 </h2>
- 
- 
-                <p class="about-text">
- 
-                    Este portafolio reúne proyectos de
-                    videojuegos, experimentos y experiencias
-                    interactivas. Cada juego tiene su propio
-                    espacio para mostrar su gameplay,
-                    personalidad y objetivos.
- 
-                </p>
- 
- 
-                <p class="about-text">
- 
-                    Los proyectos combinan creatividad,
-                    programación y diseño para crear
-                    experiencias interactivas entretenidas
-                    y educativas.
- 
-                </p>
- 
+
             </div>
- 
+
+
+            <div class="technology-content">
+
+
+                <div class="technology-block">
+
+                    <div class="technology-title">
+
+                        <div class="technology-icon">
+                            <i class="bi bi-code-slash"></i>
+                        </div>
+
+                        <div>
+                            <span>DESARROLLO</span>
+                            <h3>Tecnologías</h3>
+                        </div>
+
+                    </div>
+
+
+                    <div class="technology-list">
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-filetype-html"></i>
+
+                            <div>
+                                <strong>HTML5</strong>
+                                <p>
+                                    Estructura de los videojuegos
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-filetype-css"></i>
+
+                            <div>
+                                <strong>CSS3</strong>
+                                <p>
+                                    Diseño visual e interfaces
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-filetype-js"></i>
+
+                            <div>
+                                <strong>JavaScript</strong>
+                                <p>
+                                    Mecánicas, interacción y lógica
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="technology-block">
+
+                    <div class="technology-title">
+
+                        <div class="technology-icon">
+                            <i class="bi bi-wrench-adjustable"></i>
+                        </div>
+
+                        <div>
+                            <span>HERRAMIENTAS</span>
+                            <h3>Herramientas</h3>
+                        </div>
+
+                    </div>
+
+
+                    <div class="technology-list">
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-code-square"></i>
+
+                            <div>
+                                <strong>Visual Studio Code</strong>
+                                <p>
+                                    Desarrollo y edición
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-github"></i>
+
+                            <div>
+                                <strong>GitHub</strong>
+                                <p>
+                                    Almacenamiento y organización
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="technology-item">
+
+                            <i class="bi bi-globe2"></i>
+
+                            <div>
+                                <strong>GitHub Pages</strong>
+                                <p>
+                                    Publicación de los videojuegos
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </section>
- 
- 
+
+
+
+        <!-- =================================
+             INTELIGENCIA ARTIFICIAL
+        ================================== -->
+
+        <section class="ai-section reveal">
+
+            <div class="ai-icon">
+                <i class="bi bi-robot"></i>
+            </div>
+
+            <div>
+
+                <p class="section-label">
+                    <i class="bi bi-stars"></i>
+                    INTELIGENCIA ARTIFICIAL
+                </p>
+
+                <h2>
+                    Una herramienta
+                    <em>de apoyo.</em>
+                </h2>
+
+                <p class="ai-text">
+
+                    Durante el desarrollo de los proyectos se utilizó
+                    <strong>Inteligencia Artificial como herramienta
+                    de apoyo</strong> para diferentes etapas del proceso
+                    creativo y de desarrollo.
+
+                </p>
+
+
+                <div class="ai-grid">
+
+                    <div>
+                        <i class="bi bi-lightbulb"></i>
+                        <span>Generación y mejora de ideas.</span>
+                    </div>
+
+                    <div>
+                        <i class="bi bi-code-slash"></i>
+                        <span>Apoyo en programación.</span>
+                    </div>
+
+                    <div>
+                        <i class="bi bi-wrench"></i>
+                        <span>Corrección y mejora de código.</span>
+                    </div>
+
+                    <div>
+                        <i class="bi bi-controller"></i>
+                        <span>Propuestas para las mecánicas.</span>
+                    </div>
+
+                    <div>
+                        <i class="bi bi-palette"></i>
+                        <span>Ideas para interfaces y elementos visuales.</span>
+                    </div>
+
+                    <div>
+                        <i class="bi bi-file-text"></i>
+                        <span>Organización y documentación.</span>
+                    </div>
+
+                </div>
+
+
+                <p class="ai-final-text">
+
+                    La IA fue utilizada como herramienta de apoyo durante
+                    el proceso creativo y de desarrollo. Los proyectos
+                    fueron <strong>probados, modificados y adaptados</strong>
+                    para cumplir con los objetivos planteados.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             LO QUE APRENDÍ
+        ================================== -->
+
+        <section class="learning-section reveal">
+
+            <div class="learning-header">
+
+                <p class="section-label">
+                    <i class="bi bi-mortarboard"></i>
+                    APRENDIZAJE
+                </p>
+
+                <h2>
+                    Lo que
+                    <em>aprendí.</em>
+                </h2>
+
+            </div>
+
+
+            <div class="learning-grid">
+
+                <div class="learning-item">
+                    <i class="bi bi-controller"></i>
+                    <span>Diseñar mecánicas de juego.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-code-slash"></i>
+                    <span>Programar interacciones y eventos.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-map"></i>
+                    <span>Crear escenarios y mapas.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-trophy"></i>
+                    <span>Implementar sistemas de puntuación y recursos.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-person-walking"></i>
+                    <span>Programar el movimiento de personajes.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-window"></i>
+                    <span>Diseñar interfaces para videojuegos.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-droplet"></i>
+                    <span>Diseñar experiencias educativas mediante videojuegos.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-calculator"></i>
+                    <span>Crear sistemas de preguntas y respuestas.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-github"></i>
+                    <span>Organizar proyectos utilizando GitHub.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Documentar proyectos de manera profesional.</span>
+                </div>
+
+                <div class="learning-item">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <span>Mejorar los videojuegos mediante pruebas y modificaciones.</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             PRÓXIMAS MEJORAS
+        ================================== -->
+
+        <section class="improvements-section reveal">
+
+            <div class="improvements-header">
+
+                <p class="section-label">
+                    <i class="bi bi-rocket-takeoff"></i>
+                    PRÓXIMAS MEJORAS
+                </p>
+
+                <h2>
+                    Lo que sigue
+                    <em>en el camino.</em>
+                </h2>
+
+            </div>
+
+
+            <div class="improvements-grid">
+
+
+                <div class="improvement-card">
+
+                    <div class="improvement-number">
+                        01
+                    </div>
+
+                    <h3>TURBOPLATO</h3>
+
+                    <ul>
+                        <li>Agregar más tipos de alimentos.</li>
+                        <li>Incorporar nuevos niveles.</li>
+                        <li>Mejorar las animaciones.</li>
+                        <li>Agregar efectos de sonido y música.</li>
+                        <li>Crear nuevos desafíos.</li>
+                        <li>Añadir un sistema de récords.</li>
+                    </ul>
+
+                </div>
+
+
+
+                <div class="improvement-card">
+
+                    <div class="improvement-number">
+                        02
+                    </div>
+
+                    <h3>VIDA EN BALANCE</h3>
+
+                    <ul>
+                        <li>Ampliar el mapa.</li>
+                        <li>Agregar nuevas zonas.</li>
+                        <li>Incorporar más sistemas de recursos.</li>
+                        <li>Agregar nuevas decisiones.</li>
+                        <li>Mejorar las animaciones.</li>
+                        <li>Agregar efectos de sonido.</li>
+                        <li>Incorporar más situaciones y objetivos.</li>
+                    </ul>
+
+                </div>
+
+
+
+                <div class="improvement-card">
+
+                    <div class="improvement-number">
+                        03
+                    </div>
+
+                    <h3>RETO GOTA A GOTA</h3>
+
+                    <ul>
+                        <li>Agregar más situaciones relacionadas con el ahorro de agua.</li>
+                        <li>Incorporar nuevos niveles de dificultad.</li>
+                        <li>Crear un sistema de logros.</li>
+                        <li>Agregar efectos de sonido y música.</li>
+                        <li>Añadir estadísticas más completas.</li>
+                        <li>Incorporar más consejos educativos.</li>
+                    </ul>
+
+                </div>
+
+
+
+                <div class="improvement-card">
+
+                    <div class="improvement-number">
+                        04
+                    </div>
+
+                    <h3>ZAFIMATH ADVENTURE</h3>
+
+                    <ul>
+                        <li>Agregar más operaciones matemáticas.</li>
+                        <li>Incorporar diferentes niveles de dificultad.</li>
+                        <li>Añadir más animales.</li>
+                        <li>Agregar efectos de sonido y música.</li>
+                        <li>Mejorar las animaciones.</li>
+                        <li>Ampliar el escenario de la selva.</li>
+                        <li>Crear un sistema de récords.</li>
+                        <li>Incorporar estadísticas del jugador.</li>
+                        <li>Agregar más mecánicas de exploración.</li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             OBJETIVO DEL PORTAFOLIO
+        ================================== -->
+
+        <section class="portfolio-goal reveal">
+
+            <div class="goal-icon">
+                <i class="bi bi-bullseye"></i>
+            </div>
+
+            <div>
+
+                <p class="section-label">
+                    <i class="bi bi-stars"></i>
+                    OBJETIVO DEL PORTAFOLIO
+                </p>
+
+                <h2>
+                    Mostrar el proceso,
+                    <em>no solo el resultado.</em>
+                </h2>
+
+                <p>
+
+                    Este portafolio reúne los proyectos desarrollados
+                    durante las primeras clases de
+                    <strong>Game Development</strong>.
+
+                    <br><br>
+
+                    El objetivo es mostrar no solamente los videojuegos
+                    terminados, sino también el proceso de aprendizaje,
+                    experimentación y evolución de cada proyecto.
+
+                    <br><br>
+
+                    Cada videojuego representa una propuesta diferente
+                    y demuestra el desarrollo progresivo de mis
+                    habilidades en programación, diseño e interacción.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
     </main>
- 
- 
+
+
+
     <!-- =================================
          FOOTER
     ================================== -->
- 
+
     <footer>
- 
+
         <div>
- 
             <i class="bi bi-heart-fill"></i>
- 
             MADE WITH LOVE & PIXELS
- 
         </div>
- 
- 
+
         <div>
- 
             GAME DEVELOPMENT PORTFOLIO ·
- 
             <span id="year"></span>
- 
         </div>
- 
+
     </footer>
- 
- 
-    <!-- =================================
-         JAVASCRIPT
-    ================================== -->
- 
+
+
+
+    <!-- JS -->
+
     <script src="script.js"></script>
- 
+
 </body>
- 
+
 </html>
