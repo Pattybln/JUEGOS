@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EcoHéroes: Rescate del Relleno</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --teal-950:#072827;
+  --teal-900:#0d3d3b;
+  --teal-800:#15504d;
+  --teal-700:#1d6661;
+
+  --lime:#c6e021;
+  --lime-dark:#8da510;
+
+  --cream:#f7efd9;
+  --white:#ffffff;
+
+  --paper:#2d6cdf;
+  --plastico:#f2b705;
+  --vidrio:#1e9b61;
+  --organico:#8a5a2b;
+  --general:#697786;
+  --especial:#9b59b6;
+
+  --danger:#e0483e;
+  --success:#66d17a;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  min-height:100%;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+
+  /*
+    FONDO NATURAL
+    Se combinan degradados verdes con hojas/vegetación
+    utilizando emojis como decoración.
+  */
+  background:
+    radial-gradient(circle at 10% 15%, rgba(116,164,47,.30) 0 4%, transparent 5%),
+    radial-gradient(circle at 88% 20%, rgba(198,224,33,.18) 0 3%, transparent 4%),
+    radial-gradient(circle at 20% 85%, rgba(55,130,73,.30) 0 5%, transparent 6%),
+    radial-gradient(circle at 90% 80%, rgba(91,146,48,.25) 0 5%, transparent 6%),
+    linear-gradient(135deg,#123f35,#062523 50%,#0b332c);
+
+  font-family:'Nunito',sans-serif;
+  color:var(--cream);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  padding:15px;
+
+  overflow-x:hidden;
+
+  position:relative;
+}
+
+/* Decoración de hojas del fondo */
+body::before{
+  content:"🌿     🍃          🌱       🍀       🌿";
+  position:fixed;
+  top:10px;
+  left:0;
+  width:100%;
+  font-size:34px;
+  opacity:.18;
+  letter-spacing:18px;
+  pointer-events:none;
+  z-index:0;
+  transform:rotate(-4deg);
+}
+
+body::after{
+  content:"🍃       🌿       🍀          🌱       🍃";
+  position:fixed;
+  bottom:10px;
+  left:0;
+  width:100%;
+  font-size:32px;
+  opacity:.16;
+  letter-spacing:15px;
+  pointer-events:none;
+  z-index:0;
+  transform:rotate(3deg);
+}
+
+button{
+  font-family:inherit;
+}
+
+.game{
+  width:100%;
+  max-width:650px;
+
+  position:relative;
+  z-index:2;
+
+  background:linear-gradient(
+    180deg,
+    var(--teal-800),
+    var(--teal-950)
+  );
+
+  padding:7px;
+  border-radius:30px;
+
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.55),
+    0 0 0 2px rgba(198,224,33,.15);
+}
+
+.screen{
+  min-height:720px;
+
+  position:relative;
+
+  overflow:hidden;
+
+  padding:18px;
+
+  border-radius:24px;
+
+  background:
+    radial-gradient(
+      circle at 10% 20%,
+      rgba(126,176,63,.10),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(198,224,33,.08),
+      transparent 25%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,.025) 0 2px,
+      transparent 2px 15px
+    ),
+    linear-gradient(
+      180deg,
+      #103c3a,
+      #082625
+    );
+}
+
+/* Hojas decorativas dentro del juego */
+.screen::before{
+  content:"🍃";
+  position:absolute;
+  top:70px;
+  left:8px;
+  font-size:48px;
+  opacity:.12;
+  transform:rotate(-25deg);
+  pointer-events:none;
+}
+
+.screen::after{
+  content:"🌿";
+  position:absolute;
+  bottom:150px;
+  right:5px;
+  font-size:55px;
+  opacity:.10;
+  transform:rotate(20deg);
+  pointer-events:none;
+}
+
+/* =========================
+   HUD
+========================= */
+
+.hud{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{
+  font-family:'Baloo 2',sans-serif;
+  font-size:1.3rem;
+  font-weight:800;
+  line-height:.95;
+  color:var(--lime);
+}
+
+.logo small{
+  display:block;
+  margin-top:4px;
+
+  font-family:'Nunito',sans-serif;
+  font-size:.58rem;
+  font-weight:800;
+
+  color:var(--cream);
+
+  opacity:.65;
+
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+}
+
+.hud-right{
+  display:flex;
+  gap:7px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.pill{
+  background:rgba(255,255,255,.09);
+
+  border:1px solid rgba(255,255,255,.12);
+
+  border-radius:999px;
+
+  padding:6px 10px;
+
+  font-size:.75rem;
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.lives{
+  letter-spacing:1px;
+}
+
+.life-lost{
+  opacity:.22;
+  filter:grayscale(1);
+}
+
+/* =========================
+   LEVEL
+========================= */
+
+.level-header{
+  margin-top:15px;
+}
+
+.level-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+
+  margin-bottom:7px;
+}
+
+.level-tag{
+  display:inline-block;
+
+  padding:4px 10px;
+
+  border-radius:999px;
+
+  background:var(--lime);
+
+  color:var(--teal-950);
+
+  font-size:.67rem;
+  font-weight:900;
+
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+
+.progress-text{
+  font-size:.68rem;
+  font-weight:800;
+  opacity:.65;
+}
+
+.progress{
+  width:100%;
+  height:8px;
+
+  background:rgba(255,255,255,.1);
+
+  border-radius:999px;
+
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+
+  background:linear-gradient(
+    90deg,
+    var(--lime),
+    #8fd400
+  );
+
+  border-radius:999px;
+
+  transition:width .35s ease;
+}
+
+/* =========================
+   BELT
+========================= */
+
+.belt{
+  position:relative;
+
+  min-height:265px;
+
+  margin-top:13px;
+  margin-bottom:12px;
+
+  padding:20px;
+
+  overflow:hidden;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(198,224,33,.06),
+      transparent 60%
+    ),
+    #06201f;
+
+  border:2px solid rgba(198,224,33,.12);
+
+  border-radius:18px;
+}
+
+.belt-track{
+  position:absolute;
+
+  left:-10px;
+  right:-10px;
+  bottom:45px;
+
+  height:18px;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #382716 0 24px,
+      #24190e 24px 29px
+    );
+
+  border-top:3px solid #b98f47;
+  border-bottom:3px solid #b98f47;
+
+  box-shadow:0 5px 10px rgba(0,0,0,.5);
+}
+
+.belt-track::before,
+.belt-track::after{
+  content:"";
+
+  position:absolute;
+
+  top:-5px;
+
+  width:27px;
+  height:27px;
+
+  border-radius:50%;
+
+  background:#20160b;
+
+  border:4px solid #b98f47;
+}
+
+.belt-track::before{
+  left:-5px;
+}
+
+.belt-track::after{
+  right:-5px;
+}
+
+.item-area{
+  position:relative;
+  z-index:3;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:8px;
+
+  margin-bottom:55px;
+}
+
+.item-card{
+  width:125px;
+  height:125px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:var(--cream);
+
+  border-radius:22px;
+
+  color:#233;
+
+  font-size:3.4rem;
+
+  box-shadow:
+    0 10px 0 rgba(0,0,0,.25),
+    0 18px 25px rgba(0,0,0,.4);
+
+  animation:itemIn .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+@keyframes itemIn{
+  from{
+    transform:translateY(-45px) scale(.65);
+    opacity:0;
+  }
+
+  to{
+    transform:translateY(0) scale(1);
+    opacity:1;
+  }
+}
+
+.item-card.correct{
+  animation:correctAnimation .55s ease forwards;
+}
+
+@keyframes correctAnimation{
+  0%{
+    transform:scale(1);
+  }
+
+  45%{
+    transform:scale(1.25) rotate(8deg);
+  }
+
+  100%{
+    transform:scale(0) rotate(25deg);
+    opacity:0;
+  }
+}
+
+.item-card.wrong{
+  animation:wrongAnimation .45s ease;
+}
+
+@keyframes wrongAnimation{
+  0%,100%{
+    transform:translateX(0);
+  }
+
+  20%{
+    transform:translateX(-12px);
+  }
+
+  40%{
+    transform:translateX(12px);
+  }
+
+  60%{
+    transform:translateX(-8px);
+  }
+
+  80%{
+    transform:translateX(7px);
+  }
+}
+
+.item-name{
+  padding:4px 12px;
+
+  background:rgba(0,0,0,.28);
+
+  border-radius:999px;
+
+  font-family:'Baloo 2',sans-serif;
+
+  font-size:.95rem;
+  font-weight:800;
+
+  text-align:center;
+}
+
+.timer-info{
+  display:flex;
+  align-items:center;
+  gap:7px;
+
+  font-size:.65rem;
+  font-weight:800;
+
+  opacity:.75;
+}
+
+.timer{
+  width:160px;
+  height:9px;
+
+  background:rgba(255,255,255,.1);
+
+  border-radius:999px;
+
+  overflow:hidden;
+}
+
+.timer-bar{
+  width:100%;
+  height:100%;
+
+  background:linear-gradient(
+    90deg,
+    var(--lime),
+    #8fd400
+  );
+
+  transform-origin:left;
+}
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback{
+  min-height:68px;
+
+  padding:10px 12px;
+
+  margin-bottom:10px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  border-radius:14px;
+
+  background:rgba(255,255,255,.055);
+
+  font-size:.76rem;
+  font-weight:700;
+
+  line-height:1.35;
+}
+
+.feedback.good{
+  color:#d9ff8b;
+
+  background:rgba(102,209,122,.1);
+}
+
+.feedback.bad{
+  color:#ffaaa3;
+
+  background:rgba(224,72,62,.1);
+}
+
+.feedback.info{
+  color:#f8e7a9;
+}
+
+/* =========================
+   LEARNING CARD
+========================= */
+
+.lesson{
+  display:none;
+
+  padding:11px;
+
+  margin-bottom:10px;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(198,224,33,.11),
+      rgba(255,255,255,.04)
+    );
+
+  border:1px solid rgba(198,224,33,.18);
+}
+
+.lesson.visible{
+  display:block;
+}
+
+.lesson-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+
+  color:var(--lime);
+
+  font-size:.72rem;
+  font-weight:900;
+
+  margin-bottom:4px;
+}
+
+.lesson-text{
+  font-size:.68rem;
+  line-height:1.4;
+
+  opacity:.9;
+}
+
+/* =========================
+   BINS
+========================= */
+
+.bins{
+  display:grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap:7px;
+}
+
+/*
+  IMPORTANTE:
+  Los botones se mezclan mediante JavaScript.
+  La animación hace que el cambio de posición
+  se note en cada nueva pregunta.
+*/
+
+.bin{
+  min-height:75px;
+
+  border:none;
+
+  border-radius:15px;
+
+  padding:8px 4px;
+
+  cursor:pointer;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  color:#fff;
+
+  font-size:.61rem;
+  font-weight:900;
+
+  line-height:1.05;
+
+  box-shadow:0 5px 0 rgba(0,0,0,.28);
+
+  transition:
+    transform .12s ease,
+    filter .15s ease;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.bin:active{
+  transform:translateY(4px);
+
+  box-shadow:0 2px 0 rgba(0,0,0,.25);
+}
+
+.bin .icon{
+  font-size:1.45rem;
+  margin-bottom:3px;
+}
+
+.bin.papel{
+  background:var(--paper);
+}
+
+.bin.plastico{
+  background:var(--plastico);
+  color:#332700;
+}
+
+.bin.vidrio{
+  background:var(--vidrio);
+}
+
+.bin.organico{
+  background:var(--organico);
+}
+
+.bin.general{
+  background:var(--general);
+}
+
+.bin.especial{
+  background:var(--especial);
+}
+
+.bin.flash{
+  animation:flash .55s ease;
+}
+
+@keyframes flash{
+  0%,100%{
+    filter:brightness(1);
+  }
+
+  50%{
+    filter:brightness(1.6);
+    transform:scale(1.05);
+  }
+}
+
+.bin.disabled{
+  opacity:.4;
+  pointer-events:none;
+}
+
+/* Animación al mezclar */
+.bin.shuffle{
+  animation:shuffleButton .25s ease;
+}
+
+@keyframes shuffleButton{
+  0%{
+    opacity:.45;
+    transform:scale(.92);
+  }
+
+  100%{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* =========================
+   TIP
+========================= */
+
+.eco-tip{
+  margin-top:10px;
+
+  text-align:center;
+
+  font-size:.6rem;
+
+  opacity:.55;
+}
+
+/* =========================
+   OVERLAYS
+========================= */
+
+.overlay{
+  position:absolute;
+
+  inset:7px;
+
+  z-index:20;
+
+  border-radius:23px;
+
+  padding:25px 20px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,40,39,.98),
+      rgba(5,28,27,.99)
+    );
+}
+
+.overlay.hidden{
+  display:none;
+}
+
+.big-emoji{
+  font-size:4rem;
+
+  margin-bottom:3px;
+}
+
+.overlay h1{
+  margin:0;
+
+  font-family:'Baloo 2',sans-serif;
+
+  font-size:1.75rem;
+  line-height:1;
+
+  color:var(--lime);
+}
+
+.overlay p{
+  max-width:430px;
+
+  margin:12px 0;
+
+  font-size:.8rem;
+
+  line-height:1.5;
+
+  opacity:.88;
+}
+
+.legend{
+  width:100%;
+  max-width:400px;
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:7px;
+
+  margin:7px 0 15px;
+
+  text-align:left;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+
+  font-size:.65rem;
+  font-weight:700;
+}
+
+.dot{
+  width:11px;
+  height:11px;
+
+  border-radius:4px;
+
+  flex:none;
+}
+
+.btn{
+  border:none;
+
+  padding:13px 28px;
+
+  border-radius:999px;
+
+  background:var(--lime);
+
+  color:var(--teal-950);
+
+  font-family:'Baloo 2',sans-serif;
+
+  font-size:1rem;
+  font-weight:900;
+
+  cursor:pointer;
+
+  box-shadow:
+    0 6px 0 var(--lime-dark);
+
+  transition:.1s ease;
+}
+
+.btn:active{
+  transform:translateY(4px);
+
+  box-shadow:
+    0 2px 0 var(--lime-dark);
+}
+
+.btn.secondary{
+  margin-top:8px;
+
+  background:transparent;
+
+  color:var(--cream);
+
+  border:2px solid rgba(255,255,255,.25);
+
+  box-shadow:none;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+  display:flex;
+
+  gap:24px;
+
+  margin:12px 0 15px;
+}
+
+.stat{
+  min-width:65px;
+}
+
+.stat-number{
+  font-family:'Baloo 2',sans-serif;
+
+  font-size:1.6rem;
+
+  color:var(--lime);
+
+  font-weight:800;
+}
+
+.stat-label{
+  font-size:.57rem;
+
+  text-transform:uppercase;
+
+  letter-spacing:1px;
+
+  opacity:.6;
+}
+
+.medal{
+  font-size:3rem;
+
+  margin:5px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:480px){
+
+  body{
+    padding:7px;
+  }
+
+  .screen{
+    padding:14px;
+
+    min-height:690px;
+  }
+
+  .logo{
+    font-size:1.05rem;
+  }
+
+  .pill{
+    padding:5px 8px;
+
+    font-size:.65rem;
+  }
+
+  .item-card{
+    width:105px;
+    height:105px;
+
+    font-size:2.8rem;
+  }
+
+  .belt{
+    min-height:245px;
+  }
+
+  .bins{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .bin{
+    min-height:70px;
+  }
+
+  .overlay h1{
+    font-size:1.45rem;
+  }
+}
+
+@media(max-width:350px){
+
+  .hud{
+    align-items:flex-start;
+  }
+
+  .hud-right{
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .bins{
+    gap:5px;
+  }
+
+  .bin{
+    font-size:.56rem;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+<div class="screen" id="screen">
+
+<!-- HUD -->
+
+<div class="hud">
+
+  <div class="logo">
+    EcoHéroes
+    <small>Rescate del Relleno · EcoAcción</small>
+  </div>
+
+  <div class="hud-right">
+
+    <div class="pill">
+      ⭐ <span id="score">0</span>
+    </div>
+
+    <div class="pill">
+      🔥 <span id="combo">0</span>
+    </div>
+
+    <div class="pill lives" id="lives">
+      ❤️❤️❤️
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- NIVEL -->
+
+<div class="level-header">
+
+  <div class="level-title">
+
+    <span class="level-tag" id="levelTag">
+      Nivel 1
+    </span>
+
+    <span class="progress-text" id="progressText">
+      Ronda 1/8
+    </span>
+
+  </div>
+
+  <div class="progress">
+
+    <div
+      class="progress-bar"
+      id="progressBar">
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- BANDA -->
+
+<div class="belt">
+
+  <div class="item-area">
+
+    <div
+      class="item-card"
+      id="itemCard">
+      ♻️
+    </div>
+
+    <div
+      class="item-name"
+      id="itemName">
+      Preparado...
+    </div>
+
+    <div class="timer-info">
+
+      ⏱️
+
+      <div class="timer">
+        <div
+          class="timer-bar"
+          id="timerBar">
+        </div>
+      </div>
+
+      <span id="timeText">
+        5s
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="belt-track"></div>
+
+</div>
+
+
+<!-- APRENDIZAJE -->
+
+<div
+  class="lesson"
+  id="lesson">
+
+  <div class="lesson-title">
+    💡 Aprende
+  </div>
+
+  <div
+    class="lesson-text"
+    id="lessonText">
+  </div>
+
+</div>
+
+
+<!-- FEEDBACK -->
+
+<div
+  class="feedback"
+  id="feedback">
+
+  Toca el contenedor correcto para clasificar el residuo.
+
+</div>
+
+
+<!-- CONTENEDORES -->
+
+<div
+  class="bins"
+  id="bins">
+
+  <button
+    class="bin papel"
+    data-cat="papel">
+
+    <span class="icon">📦</span>
+
+    Papel y
+    <br>
+    cartón
+
+  </button>
+
+
+  <button
+    class="bin plastico"
+    data-cat="plastico">
+
+    <span class="icon">🧴</span>
+
+    Plástico y
+    <br>
+    envases
+
+  </button>
+
+
+  <button
+    class="bin vidrio"
+    data-cat="vidrio">
+
+    <span class="icon">🍾</span>
+
+    Vidrio
+
+  </button>
+
+
+  <button
+    class="bin organico"
+    data-cat="organico">
+
+    <span class="icon">🍌</span>
+
+    Orgánico
+
+  </button>
+
+
+  <button
+    class="bin general"
+    data-cat="general">
+
+    <span class="icon">🗑️</span>
+
+    Basura
+    <br>
+    general
+
+  </button>
+
+
+  <button
+    class="bin especial"
+    data-cat="especial">
+
+    <span class="icon">🔋</span>
+
+    Punto
+    <br>
+    especial
+
+  </button>
+
+</div>
+
+
+<div class="eco-tip">
+  🌱 Separar correctamente ayuda a recuperar materiales y reducir residuos.
+</div>
+
+
+<!-- START -->
+
+<div
+  class="overlay"
+  id="startOverlay">
+
+  <div class="big-emoji">
+    ♻️
+  </div>
+
+  <h1>
+    EcoHéroes
+  </h1>
+
+  <p>
+    ¡EcoAcción necesita tu ayuda!
+    Clasifica correctamente los residuos antes de que desaparezcan por la banda.
+  </p>
+
+  <div class="legend">
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--paper)">
+      </span>
+      Papel y cartón
+    </div>
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--plastico)">
+      </span>
+      Plástico y envases
+    </div>
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--vidrio)">
+      </span>
+      Vidrio
+    </div>
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--organico)">
+      </span>
+      Orgánico
+    </div>
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--general)">
+      </span>
+      Basura general
+    </div>
+
+    <div class="legend-item">
+      <span
+        class="dot"
+        style="background:var(--especial)">
+      </span>
+      Punto especial
+    </div>
+
+  </div>
+
+  <p>
+    🧠 Después de cada respuesta aprenderás por qué ese residuo pertenece
+    a ese contenedor.
+  </p>
+
+  <button
+    class="btn"
+    id="startBtn">
+
+    🚀 Comenzar misión
+
+  </button>
+
+</div>
+
+
+<!-- END -->
+
+<div
+  class="overlay hidden"
+  id="endOverlay">
+
+  <div
+    class="big-emoji"
+    id="endEmoji">
+    🏆
+  </div>
+
+  <div
+    class="medal"
+    id="medal">
+    🥇
+  </div>
+
+  <h1 id="endTitle">
+    ¡Misión cumplida!
+  </h1>
+
+  <p id="endText">
+    Excelente trabajo.
+  </p>
+
+  <div class="stats">
+
+    <div class="stat">
+
+      <div
+        class="stat-number"
+        id="endScore">
+        0
+      </div>
+
+      <div class="stat-label">
+        Puntos
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div
+        class="stat-number"
+        id="endCorrect">
+        0
+      </div>
+
+      <div class="stat-label">
+        Aciertos
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div
+        class="stat-number"
+        id="endAccuracy">
+        0%
+      </div>
+
+      <div class="stat-label">
+        Precisión
+      </div>
+
+    </div>
+
+  </div>
+
+  <button
+    class="btn"
+    id="retryBtn">
+
+    🔄 Jugar de nuevo
+
+  </button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+(() => {
+
+"use strict";
+
+
+/* ==========================================
+   BANCO DE RESIDUOS
+========================================== */
+
+const ITEMS = [
+
+  {
+    n:"Botella de plástico",
+    i:"🧴",
+    c:"plastico",
+    tip:"Las botellas de plástico deben separarse de otros residuos para poder recuperar el material.",
+    fact:"💡 Consejo: aplasta la botella y coloca la tapa según las normas de tu localidad."
+  },
+
+  {
+    n:"Bolsa de plástico",
+    i:"🛍️",
+    c:"plastico",
+    tip:"Las bolsas y envoltorios plásticos pertenecen a la categoría de envases cuando el sistema local los acepta.",
+    fact:"💡 Consejo: algunas bolsas requieren puntos de recogida especiales."
+  },
+
+  {
+    n:"Vaso plástico",
+    i:"🥤",
+    c:"plastico",
+    tip:"Los vasos de plástico son envases y deben clasificarse según el sistema de reciclaje de tu comunidad.",
+    fact:"💡 Reducir los vasos desechables es todavía mejor que reciclarlos."
+  },
+
+  {
+    n:"Botella de vidrio",
+    i:"🍾",
+    c:"vidrio",
+    tip:"Las botellas y frascos de vidrio pueden recuperarse para fabricar nuevos envases.",
+    fact:"💡 Consejo: no mezcles cerámica, espejos o cristales especiales con los envases de vidrio."
+  },
+
+  {
+    n:"Frasco de mermelada",
+    i:"🫙",
+    c:"vidrio",
+    tip:"Los frascos de vidrio son envases reciclables cuando el sistema local los acepta.",
+    fact:"💡 Vacía y, si es necesario, enjuaga ligeramente el envase antes de separarlo."
+  },
+
+  {
+    n:"Espejo roto",
+    i:"🪞",
+    c:"general",
+    tip:"Los espejos no deben colocarse junto con las botellas y frascos de vidrio porque tienen una composición diferente.",
+    fact:"💡 Manipula los objetos rotos con mucho cuidado para evitar cortes."
+  },
+
+  {
+    n:"Caja de cartón",
+    i:"📦",
+    c:"papel",
+    tip:"Las cajas limpias y secas pueden reciclarse como papel y cartón.",
+    fact:"💡 Aplastar las cajas ayuda a ahorrar espacio."
+  },
+
+  {
+    n:"Periódico",
+    i:"📰",
+    c:"papel",
+    tip:"El papel de periódico pertenece al grupo de papel y cartón.",
+    fact:"💡 Mantén el papel seco y libre de restos de comida."
+  },
+
+  {
+    n:"Cuaderno usado",
+    i:"📓",
+    c:"papel",
+    tip:"Las hojas y cuadernos pueden reciclarse si están libres de materiales no reciclables.",
+    fact:"💡 Antes de reciclar, separa elementos que tengan un tratamiento diferente."
+  },
+
+  {
+    n:"Rollo de cartón",
+    i:"🧻",
+    c:"papel",
+    tip:"El tubo de cartón puede separarse junto con el papel y cartón.",
+    fact:"💡 Los materiales secos y limpios son más fáciles de recuperar."
+  },
+
+  {
+    n:"Cáscara de plátano",
+    i:"🍌",
+    c:"organico",
+    tip:"Las cáscaras de frutas son residuos orgánicos y pueden aprovecharse mediante compostaje.",
+    fact:"🌱 El compost transforma residuos orgánicos en un material útil para el suelo."
+  },
+
+  {
+    n:"Restos de comida",
+    i:"🍎",
+    c:"organico",
+    tip:"Los restos de alimentos son materia orgánica.",
+    fact:"🌱 Separar los orgánicos permite aprovecharlos mediante compostaje o tratamiento especializado."
+  },
+
+  {
+    n:"Hojas secas",
+    i:"🍂",
+    c:"organico",
+    tip:"Las hojas y restos vegetales son residuos orgánicos.",
+    fact:"🌱 Las hojas pueden convertirse en parte de un buen compost."
+  },
+
+  {
+    n:"Cáscara de huevo",
+    i:"🥚",
+    c:"organico",
+    tip:"La cáscara de huevo es materia orgánica.",
+    fact:"🌱 En un compost adecuado puede contribuir al proceso de descomposición."
+  },
+
+  {
+    n:"Juguete roto",
+    i:"🧸",
+    c:"general",
+    tip:"Un juguete roto puede estar compuesto por varios materiales difíciles de separar.",
+    fact:"💡 Antes de tirarlo, comprueba si puede repararse, reutilizarse o donarse."
+  },
+
+  {
+    n:"Pañal usado",
+    i:"🩲",
+    c:"general",
+    tip:"Los pañales usados no pertenecen al reciclaje convencional.",
+    fact:"💡 Nunca coloques residuos sanitarios usados junto a materiales reciclables."
+  },
+
+  {
+    n:"Chicle masticado",
+    i:"🫧",
+    c:"general",
+    tip:"El chicle usado no se recicla mediante los sistemas habituales.",
+    fact:"💡 Envuélvelo y deposítalo en la basura general."
+  },
+
+  {
+    n:"Servilleta sucia",
+    i:"🧻",
+    c:"organico",
+    tip:"Una servilleta con restos de comida puede gestionarse como residuo orgánico cuando el sistema local lo permite.",
+    fact:"💡 No confundas papel limpio reciclable con papel contaminado con alimentos."
+  },
+
+  {
+    n:"Pila usada",
+    i:"🔋",
+    c:"especial",
+    tip:"Las pilas necesitan un sistema de recogida específico porque contienen sustancias que requieren manejo especial.",
+    fact:"⚠️ Nunca las tires al suelo ni las mezcles con residuos orgánicos."
+  },
+
+  {
+    n:"Bombilla",
+    i:"💡",
+    c:"especial",
+    tip:"Algunas bombillas necesitan puntos de recogida especiales y no deben mezclarse con el vidrio de botellas.",
+    fact:"⚠️ Consulta el sistema local de recogida para bombillas."
+  },
+
+  {
+    n:"Medicamento vencido",
+    i:"💊",
+    c:"especial",
+    tip:"Los medicamentos vencidos deben entregarse en puntos de recogida autorizados.",
+    fact:"⚠️ No los tires al inodoro ni los mezcles con la basura común."
+  },
+
+  {
+    n:"Lata de aluminio",
+    i:"🥫",
+    c:"plastico",
+    tip:"Las latas son envases metálicos y, en este juego, se agrupan con plástico y envases.",
+    fact:"💡 En sistemas reales, revisa cómo clasifica los envases metálicos tu municipio."
+  },
+
+  {
+    n:"Botella de vidrio rota",
+    i:"🍾",
+    c:"vidrio",
+    tip:"Una botella de vidrio rota sigue siendo vidrio de envase, pero debe manipularse con mucho cuidado.",
+    fact:"⚠️ Si tu municipio tiene instrucciones especiales para vidrio roto, síguelas."
+  },
+
+  {
+    n:"Revista",
+    i:"📖",
+    c:"papel",
+    tip:"Las revistas limpias y secas pueden clasificarse como papel.",
+    fact:"💡 El papel se puede reciclar varias veces, aunque sus fibras se deterioran con el tiempo."
+  },
+
+  {
+    n:"Restos de verduras",
+    i:"🥕",
+    c:"organico",
+    tip:"Los restos de frutas y verduras son residuos orgánicos.",
+    fact:"🌱 Son excelentes candidatos para compostaje."
+  },
+
+  {
+    n:"Cargador electrónico roto",
+    i:"🔌",
+    c:"especial",
+    tip:"Los aparatos eléctricos y electrónicos deben entregarse en puntos de recogida específicos.",
+    fact:"⚡ Estos residuos pueden contener materiales que pueden recuperarse."
+  },
+
+  {
+    n:"Ropa vieja",
+    i:"👕",
+    c:"especial",
+    tip:"La ropa puede tener sistemas de reutilización o recogida textil específicos.",
+    fact:"👕 Antes de desecharla, piensa si puede repararse, reutilizarse o donarse."
+  }
+
+];
+
+
+/* ==========================================
+   NIVELES
+========================================== */
+
+const LEVELS = [
+
+  {
+    rounds:8,
+    time:5500,
+    points:20,
+    name:"Nivel 1 · Barrio limpio"
+  },
+
+  {
+    rounds:10,
+    time:4300,
+    points:28,
+    name:"Nivel 2 · Planta de reciclaje"
+  },
+
+  {
+    rounds:12,
+    time:3300,
+    points:36,
+    name:"Nivel 3 · Reto EcoAcción"
+  },
+
+  {
+    rounds:15,
+    time:2700,
+    points:45,
+    name:"Nivel 4 · Maestro EcoHéroe"
+  }
+
+];
+
+
+const MAX_LIVES = 3;
+
+
+/* ==========================================
+   ESTADO
+========================================== */
+
+let score = 0;
+let lives = MAX_LIVES;
+let level = 0;
+let round = 0;
+let streak = 0;
+let correct = 0;
+let total = 0;
+let currentItem = null;
+let active = false;
+let timer = null;
+let audioContext = null;
+
+
+/* ==========================================
+   ELEMENTOS
+========================================== */
+
+const $ = id =>
+  document.getElementById(id);
+
+const scoreEl =
+  $("score");
+
+const comboEl =
+  $("combo");
+
+const livesEl =
+  $("lives");
+
+const levelTag =
+  $("levelTag");
+
+const progressText =
+  $("progressText");
+
+const progressBar =
+  $("progressBar");
+
+const itemCard =
+  $("itemCard");
+
+const itemName =
+  $("itemName");
+
+const timerBar =
+  $("timerBar");
+
+const timeText =
+  $("timeText");
+
+const feedback =
+  $("feedback");
+
+const lesson =
+  $("lesson");
+
+const lessonText =
+  $("lessonText");
+
+const bins =
+  $("bins");
+
+const startOverlay =
+  $("startOverlay");
+
+const endOverlay =
+  $("endOverlay");
+
+
+/* ==========================================
+   MEZCLAR BOTONES
+========================================== */
+
+/*
+  ESTA ES LA PARTE QUE QUERÍAS.
+
+  Cada vez que aparece una nueva pregunta,
+  los 6 botones se mezclan completamente.
+
+  Fisher-Yates:
+  produce una mezcla aleatoria correcta.
+*/
+
+function shuffleBins(){
+
+  const buttons =
+    Array.from(
+      bins.querySelectorAll(".bin")
+    );
+
+  // Mezclar los botones aleatoriamente
+  for(
+    let i = buttons.length - 1;
+    i > 0;
+    i--
+  ){
+
+    const j =
+      Math.floor(
+        Math.random() * (i + 1)
+      );
+
+    [
+      buttons[i],
+      buttons[j]
+    ] =
+    [
+      buttons[j],
+      buttons[i]
+    ];
+
+  }
+
+  // Volver a colocarlos en el contenedor
+  buttons.forEach(
+    button => {
+
+      button.classList.remove(
+        "shuffle"
+      );
+
+      bins.appendChild(button);
+
+      // Activar animación
+      void button.offsetWidth;
+
+      button.classList.add(
+        "shuffle"
+      );
+
+    }
+  );
+
+}
+
+
+/* ==========================================
+   SONIDOS
+========================================== */
+
+function sound(type){
+
+  try{
+
+    if(!audioContext){
+
+      audioContext =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+    const osc =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    osc.connect(gain);
+
+    gain.connect(
+      audioContext.destination
+    );
+
+    let frequency = 500;
+
+    if(type === "good"){
+      frequency = 700;
+    }
+
+    if(type === "bad"){
+      frequency = 170;
+    }
+
+    if(type === "level"){
+      frequency = 900;
+    }
+
+    osc.frequency.value =
+      frequency;
+
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(
+      .08,
+      audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      audioContext.currentTime + .18
+    );
+
+    osc.start();
+
+    osc.stop(
+      audioContext.currentTime + .18
+    );
+
+  }catch(e){}
+
+}
+
+
+/* ==========================================
+   VIDAS
+========================================== */
+
+function renderLives(){
+
+  let html = "";
+
+  for(
+    let i = 0;
+    i < MAX_LIVES;
+    i++
+  ){
+
+    html +=
+      i < lives
+      ? "❤️"
+      : "<span class='life-lost'>❤️</span>";
+
+  }
+
+  livesEl.innerHTML = html;
+
+}
+
+
+/* ==========================================
+   ITEM ALEATORIO
+========================================== */
+
+function getItem(){
+
+  return ITEMS[
+    Math.floor(
+      Math.random() * ITEMS.length
+    )
+  ];
+
+}
+
+
+/* ==========================================
+   PROGRESO
+========================================== */
+
+function updateProgress(){
+
+  const lvl =
+    LEVELS[level];
+
+  const percentage =
+    ((round - 1) / lvl.rounds) * 100;
+
+  progressBar.style.width =
+    Math.min(percentage,100) + "%";
+
+  progressText.textContent =
+    `Ronda ${round}/${lvl.rounds}`;
+
+}
+
+
+/* ==========================================
+   SIGUIENTE RONDA
+========================================== */
+
+function nextRound(){
+
+  if(lives <= 0){
+
+    endGame(false);
+
+    return;
+
+  }
+
+
+  if(round >= LEVELS[level].rounds){
+
+    level++;
+
+    round = 0;
+
+    if(level >= LEVELS.length){
+
+      endGame(
+        score >= 500
+      );
+
+      return;
+
+    }
+
+    sound("level");
+
+    feedback.textContent =
+      "🎉 ¡Subiste de nivel! Ahora tendrás menos tiempo.";
+
+    feedback.className =
+      "feedback good";
+
+  }
+
+
+  round++;
+
+
+  const lvl =
+    LEVELS[level];
+
+
+  levelTag.textContent =
+    lvl.name;
+
+
+  updateProgress();
+
+
+  /*
+    AQUÍ SE MEZCLAN LOS BOTONES.
+
+    Se ejecuta en TODA nueva pregunta.
+    No importa si estás en nivel 1, 2, 3 o 4.
+  */
+  shuffleBins();
+
+
+  currentItem =
+    getItem();
+
+
+  itemCard.textContent =
+    currentItem.i;
+
+  itemName.textContent =
+    currentItem.n;
+
+
+  itemCard.className =
+    "item-card";
+
+
+  lesson.classList.remove(
+    "visible"
+  );
+
+
+  feedback.textContent =
+    "Clasifica este residuo antes de que se acabe el tiempo.";
+
+  feedback.className =
+    "feedback";
+
+
+  document
+    .querySelectorAll(".bin")
+    .forEach(bin => {
+
+      bin.classList.remove(
+        "disabled",
+        "flash"
+      );
+
+    });
+
+
+  active = true;
+
+
+  const duration =
+    lvl.time;
+
+
+  timerBar.style.transition =
+    "none";
+
+  timerBar.style.transform =
+    "scaleX(1)";
+
+
+  let start =
+    performance.now();
+
+
+  function animate(now){
+
+    if(!active)
+      return;
+
+
+    const elapsed =
+      now - start;
+
+
+    const remaining =
+      Math.max(
+        0,
+        duration - elapsed
+      );
+
+
+    const ratio =
+      remaining / duration;
+
+
+    timerBar.style.transform =
+      `scaleX(${ratio})`;
+
+
+    timeText.textContent =
+      (remaining / 1000)
+        .toFixed(1) + "s";
+
+
+    if(
+      remaining > 0 &&
+      active
+    ){
+
+      requestAnimationFrame(
+        animate
+      );
+
+    }
+
+  }
+
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  clearTimeout(timer);
+
+
+  timer =
+    setTimeout(
+      () => answer(null),
+      duration
+    );
+
+}
+
+
+/* ==========================================
+   RESPUESTA
+========================================== */
+
+function answer(category){
+
+  if(!active)
+    return;
+
+
+  active = false;
+
+
+  clearTimeout(timer);
+
+
+  total++;
+
+
+  const correctCategory =
+    currentItem.c;
+
+
+  const correctBin =
+    bins.querySelector(
+      `[data-cat="${correctCategory}"]`
+    );
+
+
+  if(
+    category === correctCategory
+  ){
+
+    correct++;
+
+    streak++;
+
+
+    const comboBonus =
+      Math.min(
+        streak * 3,
+        30
+      );
+
+
+    const points =
+      LEVELS[level].points +
+      comboBonus;
+
+
+    score += points;
+
+
+    scoreEl.textContent =
+      score;
+
+
+    comboEl.textContent =
+      streak;
+
+
+    itemCard.classList.add(
+      "correct"
+    );
+
+
+    correctBin.classList.add(
+      "flash"
+    );
+
+
+    feedback.textContent =
+      `✅ ¡Correcto! +${points} puntos. ${currentItem.tip}`;
+
+
+    feedback.className =
+      "feedback good";
+
+
+    lessonText.textContent =
+      currentItem.fact;
+
+
+    lesson.classList.add(
+      "visible"
+    );
+
+
+    sound("good");
+
+
+  }else{
+
+    streak = 0;
+
+
+    comboEl.textContent =
+      "0";
+
+
+    lives--;
+
+
+    renderLives();
+
+
+    itemCard.classList.add(
+      "wrong"
+    );
+
+
+    correctBin.classList.add(
+      "flash"
+    );
+
+
+    if(category === null){
+
+      feedback.textContent =
+        `⏰ ¡Se acabó el tiempo! La respuesta correcta era "${getCategoryName(correctCategory)}". ${currentItem.tip}`;
+
+    }else{
+
+      feedback.textContent =
+        `❌ No era ese contenedor. La respuesta correcta era "${getCategoryName(correctCategory)}". ${currentItem.tip}`;
+
+    }
+
+
+    feedback.className =
+      "feedback bad";
+
+
+    lessonText.textContent =
+      currentItem.fact;
+
+
+    lesson.classList.add(
+      "visible"
+    );
+
+
+    sound("bad");
+
+  }
+
+
+  document
+    .querySelectorAll(".bin")
+    .forEach(bin => {
+
+      bin.classList.add(
+        "disabled"
+      );
+
+    });
+
+
+  setTimeout(
+    nextRound,
+    1400
+  );
+
+}
+
+
+/* ==========================================
+   NOMBRE DE CATEGORÍA
+========================================== */
+
+function getCategoryName(category){
+
+  const names = {
+
+    papel:
+      "Papel y cartón",
+
+    plastico:
+      "Plástico y envases",
+
+    vidrio:
+      "Vidrio",
+
+    organico:
+      "Orgánico",
+
+    general:
+      "Basura general",
+
+    especial:
+      "Punto especial"
+
+  };
+
+
+  return names[category] ||
+    category;
+
+}
+
+
+/* ==========================================
+   FINAL
+========================================== */
+
+function endGame(won){
+
+  active = false;
+
+  clearTimeout(timer);
+
+
+  progressBar.style.width =
+    "100%";
+
+
+  const accuracy =
+    total > 0
+    ? Math.round(
+        (correct / total) * 100
+      )
+    : 0;
+
+
+  $("endScore").textContent =
+    score;
+
+
+  $("endCorrect").textContent =
+    correct;
+
+
+  $("endAccuracy").textContent =
+    accuracy + "%";
+
+
+  const medal =
+    $("medal");
+
+
+  if(won){
+
+    $("endEmoji").textContent =
+      "🏆";
+
+    $("endTitle").textContent =
+      "¡Eres un EcoHéroe!";
+
+    $("endText").textContent =
+      `Completaste todos los niveles con ${score} puntos y una precisión del ${accuracy}%. ¡EcoAcción está orgullosa de ti!`;
+
+    medal.textContent =
+      accuracy >= 90
+      ? "🥇"
+      : accuracy >= 75
+      ? "🥈"
+      : "🥉";
+
+  }else if(lives <= 0){
+
+    $("endEmoji").textContent =
+      "🌱";
+
+    $("endTitle").textContent =
+      "¡Buen intento!";
+
+    $("endText").textContent =
+      `Te quedaste sin vidas, pero aprendiste ${correct} reglas de clasificación. ¡Cada intento te hace un mejor EcoHéroe!`;
+
+    medal.textContent =
+      "🌱";
+
+  }else{
+
+    $("endEmoji").textContent =
+      "♻️";
+
+    $("endTitle").textContent =
+      "¡Casi lo logras!";
+
+    $("endText").textContent =
+      `Terminaste el desafío con ${score} puntos. Sigue practicando para conseguir la medalla de oro.`;
+
+    medal.textContent =
+      "🥉";
+
+  }
+
+
+  endOverlay.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* ==========================================
+   INICIAR
+========================================== */
+
+function startGame(){
+
+  score = 0;
+
+  lives = MAX_LIVES;
+
+  level = 0;
+
+  round = 0;
+
+  streak = 0;
+
+  correct = 0;
+
+  total = 0;
+
+
+  scoreEl.textContent =
+    "0";
+
+  comboEl.textContent =
+    "0";
+
+
+  renderLives();
+
+
+  endOverlay.classList.add(
+    "hidden"
+  );
+
+  startOverlay.classList.add(
+    "hidden"
+  );
+
+
+  nextRound();
+
+}
+
+
+/* ==========================================
+   EVENTOS
+========================================== */
+
+$("startBtn")
+  .addEventListener(
+    "click",
+    startGame
+  );
+
+
+$("retryBtn")
+  .addEventListener(
+    "click",
+    startGame
+  );
+
+
+bins.addEventListener(
+  "click",
+  event => {
+
+    const button =
+      event.target.closest(
+        ".bin"
+      );
+
+
+    if(
+      !button ||
+      !active
+    )
+      return;
+
+
+    answer(
+      button.dataset.cat
+    );
+
+  }
+);
+
+
+/* ==========================================
+   TECLADO
+========================================== */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(!active)
+      return;
+
+
+    const keys = {
+
+      "1":"papel",
+
+      "2":"plastico",
+
+      "3":"vidrio",
+
+      "4":"organico",
+
+      "5":"general",
+
+      "6":"especial"
+
+    };
+
+
+    const category =
+      keys[event.key];
+
+
+    if(category){
+
+      answer(category);
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   INICIALIZACIÓN
+========================================== */
+
+renderLives();
+
+})();
+
+</script>
+
+</body>
+</html>

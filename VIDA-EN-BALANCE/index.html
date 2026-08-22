@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Simulador de Vida Financiera</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#101827;color:#fff;overflow:hidden}
+button{font:inherit;cursor:pointer;border:0}
+.hidden{display:none!important}
+
+#menu{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+background:linear-gradient(135deg,#102a43,#1e4d59 50%,#17324d)}
+.menu-box{width:min(900px,94vw);max-height:94vh;overflow:auto;padding:32px;border-radius:28px;
+background:rgba(255,255,255,.97);color:#172033;text-align:center;box-shadow:0 25px 80px #0008}
+.menu-box h1{font-size:42px;color:#17324d;margin-bottom:8px}
+.menu-box>p{color:#64748b;margin-bottom:22px}
+.section-title{font-size:18px;color:#17324d;margin:16px 0 10px}
+.characters{display:flex;justify-content:center;gap:25px;flex-wrap:wrap}
+.char-card{width:220px;padding:18px;border:3px solid #dbe3ec;border-radius:22px;background:#f8fafc;transition:.2s}
+.char-card:hover{transform:translateY(-4px)}
+.char-card.selected{border-color:#2563eb;background:#eff6ff;box-shadow:0 8px 24px #2563eb33}
+.preview{height:170px;display:flex;align-items:center;justify-content:center}
+.char-card h3{margin:5px 0;color:#172554}.char-card p{font-size:13px;color:#64748b}
+.menu-button{width:100%;padding:15px;margin-top:12px;border-radius:15px;background:#2563eb;color:white;font-weight:bold}
+.menu-button:hover{background:#1d4ed8}
+.menu-button.secondary{background:#e2e8f0;color:#334155}
+.menu-button.secondary:hover{background:#cbd5e1}
+.info{margin-top:14px;padding:12px;border-radius:14px;background:#f1f5f9;color:#475569;font-size:13px;text-align:left}
+
+#game{position:fixed;inset:0;background:#76a95d}
+#gameCanvas{display:block;width:100vw;height:100vh}
+
+#hud{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:8px;
+padding:9px 12px;border-radius:18px;background:#0f172ad9;backdrop-filter:blur(8px);box-shadow:0 8px 25px #0004}
+.hud-item{min-width:92px;text-align:center}.hud-label{display:block;color:#cbd5e1;font-size:11px}
+.hud-value{display:block;margin-top:3px;font-size:18px;font-weight:bold}
+#pauseButton{position:fixed;right:18px;top:18px;z-index:30;padding:11px 15px;border-radius:13px;background:#0f172ade;color:#fff;font-weight:bold}
+
+#actionPanel{position:fixed;left:18px;bottom:18px;z-index:25;width:330px;padding:16px;border-radius:20px;
+background:#0f172add;backdrop-filter:blur(8px);box-shadow:0 10px 35px #0005}
+#actionPanel h3{margin-bottom:8px}
+.bars{display:grid;gap:6px;margin-bottom:10px}
+.bar{height:11px;border-radius:8px;background:#334155;overflow:hidden}
+.fill{height:100%;width:50%;transition:.25s}
+#happyFill{background:#f59e0b}#energyFill{background:#22c55e}#saveFill{background:#38bdf8}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.action-btn{padding:9px;border-radius:10px;background:#2563eb;color:#fff;font-size:12px;font-weight:bold}
+.action-btn:hover{filter:brightness(1.1)}
+.action-btn.red{background:#dc2626}.action-btn.green{background:#16a34a}.action-btn.gray{background:#475569}
+
+#eventScreen,#pauseScreen,#gameOverScreen,#victoryScreen{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;background:#0009}
+.modal{width:min(520px,92vw);padding:30px;border-radius:24px;background:#fff;color:#172033;text-align:center;box-shadow:0 25px 70px #0008}
+.modal h2{color:#172554;margin-bottom:12px}.modal p{color:#64748b;line-height:1.5;margin-bottom:18px}
+.modal button{width:100%;padding:13px;border-radius:13px;background:#2563eb;color:white;font-weight:bold;margin-top:7px}
+.modal button.back{background:#e2e8f0;color:#334155}
+.event-options{display:grid;gap:9px}
+.event-options button{background:#0f766e}.event-options button:hover{background:#115e59}
+
+@media(max-width:700px){
+.menu-box{padding:22px}.menu-box h1{font-size:30px}
+#hud{width:96%;justify-content:center}.hud-item{min-width:62px}.hud-value{font-size:15px}
+#actionPanel{left:8px;right:8px;bottom:8px;width:auto}
+}
+
+.building-panel{position:fixed;right:18px;bottom:18px;z-index:40;width:350px;padding:18px;border-radius:20px;
+background:#0f172aee;color:#fff;backdrop-filter:blur(10px);box-shadow:0 12px 40px #0007}
+.building-panel h3{margin-bottom:6px;font-size:20px}.building-panel p{color:#cbd5e1;font-size:13px;margin-bottom:12px}
+.building-option{width:100%;padding:12px;margin:5px 0;border-radius:11px;background:#2563eb;color:#fff;font-weight:bold;text-align:left}
+.building-option:hover{background:#1d4ed8}.building-option small{display:block;color:#dbeafe;margin-top:3px;font-weight:normal}
+.close-building{width:100%;padding:10px;margin-top:8px;border-radius:10px;background:#475569;color:#fff;font-weight:bold}
+#locationHint{margin-top:10px;color:#cbd5e1;font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="menu">
+ <div class="menu-box">
+  <h1>💰 Simulador de Vida Financiera</h1>
+  <p>Administra tu dinero, cuida tu bienestar y llega al día 30 con tu meta de ahorro.</p>
+  <div class="section-title">Elige tu personaje</div>
+  <div class="characters">
+   <div class="char-card selected" id="maleCard" onclick="seleccionarPersonaje('hombre')">
+    <div class="preview"><canvas id="malePreview" width="130" height="160"></canvas></div>
+    <h3>Mateo</h3><p>Personaje hombre · estilo casual</p>
+   </div>
+   <div class="char-card" id="femaleCard" onclick="seleccionarPersonaje('mujer')">
+    <div class="preview"><canvas id="femalePreview" width="130" height="160"></canvas></div>
+    <h3>Valeria</h3><p>Personaje mujer · estilo casual</p>
+   </div>
+  </div>
+  <div class="info">Durante 30 días podrás trabajar, comprar comida, pagar servicios, ahorrar, salir con amigos o comprar artículos no esenciales. También aparecerán imprevistos y decisiones financieras.</div>
+  <button class="menu-button" onclick="iniciarJuego()">JUGAR</button>
+  <button class="menu-button secondary" onclick="mostrarControles()">CONTROLES</button>
+  <button class="menu-button secondary" onclick="mostrarCreditos()">CRÉDITOS</button>
+ </div>
+</div>
+
+<div id="game">
+ <canvas id="gameCanvas"></canvas>
+ <div id="hud">
+  <div class="hud-item"><span class="hud-label">DÍA</span><span class="hud-value" id="day">1 / 30</span></div>
+  <div class="hud-item"><span class="hud-label">DINERO</span><span class="hud-value" id="money">Bs 1500</span></div>
+  <div class="hud-item"><span class="hud-label">AHORRO</span><span class="hud-value" id="saving">Bs 0</span></div>
+  <div class="hud-item"><span class="hud-label">DEUDA</span><span class="hud-value" id="debt">Bs 0</span></div>
+ </div>
+ <button id="pauseButton" onclick="pausarJuego()">PAUSA</button>
+ <div id="actionPanel">
+  <h3>📋 Estado</h3>
+  <div class="bars">
+   <div>😊 Felicidad <span id="happyText">80</span></div><div class="bar"><div class="fill" id="happyFill"></div></div>
+   <div>⚡ Energía <span id="energyText">80</span></div><div class="bar"><div class="fill" id="energyFill"></div></div>
+   <div>🎯 Meta de ahorro <span id="saveText">0 / 1000</span></div><div class="bar"><div class="fill" id="saveFill"></div></div>
+  </div>
+  <div id="locationHint">🚶 Acércate a un edificio para interactuar.</div>
+ </div>
+</div>
+
+<div id="buildingPanel" class="building-panel hidden">
+ <h3 id="buildingTitle">Edificio</h3>
+ <p id="buildingDescription"></p>
+ <div id="buildingOptions"></div>
+ <button class="close-building" onclick="cerrarEdificio()">CERRAR</button>
+</div>
+
+<div id="eventScreen"><div class="modal"><h2 id="eventTitle"></h2><p id="eventText"></p><div class="event-options" id="eventOptions"></div></div></div>
+
+<div id="pauseScreen"><div class="modal"><h2>⏸ Juego pausado</h2><p>Tu progreso está guardado.</p><button onclick="continuarJuego()">CONTINUAR</button><button class="back" onclick="volverAlMenu()">MENÚ PRINCIPAL</button></div></div>
+
+<div id="gameOverScreen"><div class="modal"><h2>💳 Fin de la partida</h2><p id="loseText"></p><button onclick="reiniciarJuego()">JUGAR DE NUEVO</button><button class="back" onclick="volverAlMenu()">MENÚ PRINCIPAL</button></div></div>
+
+<div id="victoryScreen"><div class="modal"><h2>🏆 ¡Meta cumplida!</h2><p id="winText"></p><button onclick="reiniciarJuego()">JUGAR DE NUEVO</button><button class="back" onclick="volverAlMenu()">MENÚ PRINCIPAL</button></div></div>
+
+<script>
+const canvas=document.getElementById("gameCanvas"),ctx=canvas.getContext("2d");
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight} resize(); addEventListener("resize",resize);
+
+const MAP_WIDTH=4000,MAP_HEIGHT=3000;
+let gameRunning=false,paused=false,day=1,money=1500,saving=0,debt=0,happiness=80,energy=80;
+let selected="hombre",actionsToday=0,timer;
+const keys={};
+const player={x:2000,y:1500,width:48,height:70,speed:5,direction:"down"};
+const camera={x:0,y:0,width:innerWidth,height:innerHeight};
+
+const obstacles=[
+{x:500,y:400,width:400,height:120},{x:1250,y:300,width:150,height:500},{x:1850,y:550,width:500,height:120},
+{x:2800,y:300,width:500,height:140},{x:3200,y:900,width:150,height:550},{x:500,y:1600,width:180,height:500},
+{x:1050,y:2100,width:600,height:130},{x:2200,y:1750,width:150,height:500},{x:2800,y:2200,width:550,height:130}
+];
+const trees=[],rocks=[],flowers=[];
+for(let i=0;i<150;i++)trees.push({x:Math.random()*MAP_WIDTH,y:Math.random()*MAP_HEIGHT,size:25+Math.random()*25});
+for(let i=0;i<100;i++)rocks.push({x:Math.random()*MAP_WIDTH,y:Math.random()*MAP_HEIGHT,size:5+Math.random()*10});
+for(let i=0;i<200;i++)flowers.push({x:Math.random()*MAP_WIDTH,y:Math.random()*MAP_HEIGHT,size:3+Math.random()*3});
+
+function drawCharacter(c,x,y,type,scale=1){
+ c.save();c.translate(x,y);c.scale(scale,scale);
+ c.fillStyle="#0003";c.beginPath();c.ellipse(0,38,24,9,0,0,Math.PI*2);c.fill();
+ if(type==="mujer"){
+  c.fillStyle="#7c3aed";c.beginPath();c.moveTo(-20,8);c.lineTo(20,8);c.lineTo(28,38);c.lineTo(-28,38);c.closePath();c.fill();
+  c.fillStyle="#5b341f";c.beginPath();c.arc(0,-20,21,0,Math.PI*2);c.fill();
+  c.fillStyle="#f1c7a5";c.beginPath();c.arc(0,-17,15,0,Math.PI*2);c.fill();
+  c.fillStyle="#5b341f";c.beginPath();c.arc(-16,-20,9,0,Math.PI*2);c.arc(16,-20,9,0,Math.PI*2);c.fill();
+  c.fillStyle="#f1c7a5";c.fillRect(-27,10,8,28);c.fillRect(19,10,8,28);
+  c.fillStyle="#f8fafc";c.fillRect(-13,39,10,17);c.fillRect(3,39,10,17);
+ }else{
+  c.fillStyle="#2563eb";c.fillRect(-19,5,38,34);
+  c.fillStyle="#f1c7a5";c.beginPath();c.arc(0,-18,17,0,Math.PI*2);c.fill();
+  c.fillStyle="#33261d";c.beginPath();c.arc(0,-24,18,Math.PI,Math.PI*2);c.fill();
+  c.fillStyle="#f1c7a5";c.fillRect(-27,8,8,28);c.fillRect(19,8,8,28);
+  c.fillStyle="#1e293b";c.fillRect(-14,38,10,18);c.fillRect(4,38,10,18);
+ }
+ c.fillStyle="#1f2937";c.fillRect(-7,-20,4,5);c.fillRect(3,-20,4,5);
+ c.restore();
+}
+drawCharacter(document.getElementById("malePreview").getContext("2d"),65,70,"hombre",1.35);
+drawCharacter(document.getElementById("femalePreview").getContext("2d"),65,70,"mujer",1.35);
+
+function seleccionarPersonaje(type){
+ selected=type;
+ document.getElementById("maleCard").classList.toggle("selected",type==="hombre");
+ document.getElementById("femaleCard").classList.toggle("selected",type==="mujer");
+}
+addEventListener("keydown",e=>{keys[e.key.toLowerCase()]=true;if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key))e.preventDefault()});
+addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+
+function collision(nx,ny){
+ const halfW=18, halfH=25;
+ return obstacles.some(o=>
+   nx+halfW>o.x &&
+   nx-halfW<o.x+o.width &&
+   ny+halfH>o.y &&
+   ny-halfH<o.y+o.height
+ );
+}
+
+function moveAxis(dx,dy){
+ const nx=Math.max(halfClampX(),Math.min(MAP_WIDTH-halfClampX(),player.x+dx));
+ const ny=Math.max(halfClampY(),Math.min(MAP_HEIGHT-halfClampY(),player.y+dy));
+ if(!collision(nx,player.y)) player.x=nx;
+ if(!collision(player.x,ny)) player.y=ny;
+}
+
+function halfClampX(){return 25}
+function halfClampY(){return 35}
+
+function updatePlayer(){
+ if(!gameRunning||paused)return;
+
+ let dx=0,dy=0;
+ if(keys.w||keys.arrowup){dy-=1;player.direction="up"}
+ if(keys.s||keys.arrowdown){dy+=1;player.direction="down"}
+ if(keys.a||keys.arrowleft){dx-=1;player.direction="left"}
+ if(keys.d||keys.arrowright){dx+=1;player.direction="right"}
+
+ if(dx!==0 || dy!==0){
+   if(dx!==0 && dy!==0){dx*=0.7071;dy*=0.7071}
+   moveAxis(dx*player.speed,dy*player.speed);
+ }
+}
+function updateCamera(){
+ camera.width=canvas.width;camera.height=canvas.height;
+ camera.x=Math.max(0,Math.min(MAP_WIDTH-camera.width,player.x-camera.width/2));
+ camera.y=Math.max(0,Math.min(MAP_HEIGHT-camera.height,player.y-camera.height/2));
+}
+function map(){
+ ctx.fillStyle="#77aa5c";ctx.fillRect(0,0,MAP_WIDTH,MAP_HEIGHT);
+ ctx.fillStyle="#d6bd87";ctx.fillRect(0,1350,MAP_WIDTH,180);ctx.fillRect(1900,0,180,MAP_HEIGHT);
+ ctx.save();ctx.translate(1900,1350);ctx.rotate(-.35);ctx.fillRect(-1000,-65,2800,130);ctx.restore();
+ ctx.strokeStyle="#365a35";ctx.lineWidth=35;ctx.strokeRect(0,0,MAP_WIDTH,MAP_HEIGHT);
+}
+function decorations(){
+ for(const f of flowers){if(Math.abs(f.x-player.x)>canvas.width&&Math.abs(f.y-player.y)>canvas.height)continue;ctx.fillStyle="#f3d35c";ctx.beginPath();ctx.arc(f.x,f.y,f.size,0,Math.PI*2);ctx.fill()}
+ for(const r of rocks){if(Math.abs(r.x-player.x)>canvas.width&&Math.abs(r.y-player.y)>canvas.height)continue;ctx.fillStyle="#718096";ctx.beginPath();ctx.ellipse(r.x,r.y,r.size,r.size*.7,0,0,Math.PI*2);ctx.fill()}
+ for(const t of trees){if(Math.abs(t.x-player.x)>canvas.width&&Math.abs(t.y-player.y)>canvas.height)continue;
+  ctx.fillStyle="#6b4426";ctx.fillRect(t.x-7,t.y,14,t.size*1.5);
+  ctx.fillStyle="#285c32";ctx.beginPath();ctx.arc(t.x,t.y,t.size,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#4d9145";ctx.beginPath();ctx.arc(t.x+t.size*.3,t.y-t.size*.25,t.size*.5,0,Math.PI*2);ctx.fill();
+ }
+}
+function drawObstacles(){for(const o of obstacles){ctx.fillStyle="#405d3c";ctx.fillRect(o.x,o.y,o.width,o.height);ctx.fillStyle="#587a4e";ctx.fillRect(o.x+8,o.y+8,o.width-16,o.height-16)}}
+
+const buildings=[
+ {x:180,y:260,w:300,h:210,name:"🏠 Casa",roof:"#b45309",wall:"#f4d6a0",type:"casa"},
+ {x:980,y:900,w:330,h:230,name:"🏦 Banco",roof:"#1d4ed8",wall:"#dbeafe",type:"banco"},
+ {x:2850,y:560,w:380,h:250,name:"🛒 Supermercado",roof:"#be123c",wall:"#ffe4e6",type:"supermercado"},
+ {x:650,y:2350,w:350,h:240,name:"💼 Oficina",roof:"#475569",wall:"#e2e8f0",type:"trabajo"},
+ {x:1850,y:2350,w:380,h:240,name:"🏥 Clínica",roof:"#0f766e",wall:"#ccfbf1",type:"clinica"},
+ {x:3000,y:1800,w:390,h:250,name:"☕ Cafetería",roof:"#92400e",wall:"#fef3c7",type:"cafeteria"}
+];
+
+function drawBuildings(){
+ for(const b of buildings){
+  // sombra
+  ctx.fillStyle="#0002";
+  ctx.fillRect(b.x+12,b.y+14,b.w,b.h);
+  // cuerpo
+  ctx.fillStyle=b.wall;
+  ctx.fillRect(b.x,b.y+55,b.w,b.h-55);
+  // techo
+  ctx.fillStyle=b.roof;
+  ctx.beginPath();
+  ctx.moveTo(b.x-18,b.y+60);
+  ctx.lineTo(b.x+b.w/2,b.y);
+  ctx.lineTo(b.x+b.w+18,b.y+60);
+  ctx.closePath();
+  ctx.fill();
+  // puerta
+  ctx.fillStyle="#334155";
+  ctx.fillRect(b.x+b.w/2-22,b.y+b.h-72,44,72);
+  // ventanas
+  ctx.fillStyle="#7dd3fc";
+  for(let wx=b.x+35;wx<b.x+b.w-30;wx+=75){
+   ctx.fillRect(wx,b.y+88,38,35);
+  }
+  // nombre
+  ctx.fillStyle="#0f172acc";
+  ctx.fillRect(b.x+b.w/2-65,b.y-32,130,25);
+  ctx.fillStyle="#fff";
+  ctx.font="bold 13px Arial";
+  ctx.textAlign="center";
+  ctx.fillText(b.name,b.x+b.w/2,b.y-14);
+ }
+}
+
+function drawNPCs(){
+ const npcs=[{x:1500,y:1150,type:"mujer",name:"Sofía",color:"#9333ea"},{x:2450,y:1500,type:"hombre",name:"Carlos",color:"#16a34a"}];
+ for(const n of npcs){drawCharacter(ctx,n.x,n.y,n.type,.85);ctx.fillStyle="#0f172acc";ctx.fillRect(n.x-45,n.y-72,90,22);ctx.fillStyle="#fff";ctx.font="bold 12px Arial";ctx.textAlign="center";ctx.fillText(n.name,n.x,n.y-57)}
+}
+function drawPlayer(){drawCharacter(ctx,player.x,player.y,selected,1)}
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(-camera.x,-camera.y);
+ map();decorations();drawBuildings();drawObstacles();drawNPCs();drawPlayer();
+ if(night){
+   ctx.fillStyle="rgba(7,15,40,.55)";
+   ctx.fillRect(camera.x,camera.y,camera.width,camera.height);
+ }
+ ctx.restore();
+}
+function loop(){updatePlayer();updateCamera();updateNearbyBuilding();draw();requestAnimationFrame(loop)}
+
+
+let nearbyBuilding=null;
+let activeBuilding=null;
+let night=false;
+let atHome=false;
+
+function distanceToBuilding(b){
+ const bx=b.x+b.w/2, by=b.y+b.h/2;
+ return Math.hypot(player.x-bx,player.y-by);
+}
+
+function updateNearbyBuilding(){
+ let closest=null,best=Infinity;
+ for(const b of buildings){
+   const d=distanceToBuilding(b);
+   if(d<best){best=d;closest=b}
+ }
+ nearbyBuilding=(best<230)?closest:null;
+
+ const hint=document.getElementById("locationHint");
+ if(activeBuilding){
+   hint.textContent="🏢 Interactuando con "+activeBuilding.name;
+ }else if(nearbyBuilding){
+   hint.textContent="🏢 "+nearbyBuilding.name+" — presiona E para interactuar.";
+ }else if(night){
+   hint.textContent="🌙 Es de noche. Ve a tu casa para descansar.";
+ }else{
+   hint.textContent="🚶 Acércate a un edificio para interactuar.";
+ }
+}
+
+addEventListener("keydown",e=>{
+ if(e.key.toLowerCase()==="e" && gameRunning && !paused){
+   if(nearbyBuilding) abrirEdificio(nearbyBuilding);
+ }
+});
+
+function abrirEdificio(b){
+ activeBuilding=b;
+ const panel=document.getElementById("buildingPanel");
+ document.getElementById("buildingTitle").textContent=b.name;
+ const desc=document.getElementById("buildingDescription");
+ const opts=document.getElementById("buildingOptions");
+ opts.innerHTML="";
+
+ if(b.type==="trabajo"){
+   desc.textContent="Elige cómo quieres afrontar tu jornada. Esta decisión consume el día.";
+   addBuildingOption("⏰ TIEMPO EXTRA","+Bs 260 · -25 Energía · +5 Felicidad",()=>tomarDecision("extra"));
+   addBuildingOption("🕔 SALIR A TIEMPO","+Bs 180 · -10 Energía · +2 Felicidad",()=>tomarDecision("salir"));
+ }else if(b.type==="supermercado"){
+   desc.textContent="Compra lo necesario para mantenerte durante el día.";
+   addBuildingOption("🍲 COMPRAR COMIDA","-Bs 45 · +10 Energía",()=>tomarDecision("comida"));
+   addBuildingOption("🛒 COMPRA GRANDE","-Bs 100 · +20 Energía",()=>tomarDecision("comidaGrande"));
+ }else if(b.type==="banco"){
+   desc.textContent="Organiza tus finanzas y fortalece tu meta de ahorro.";
+   addBuildingOption("🏦 AHORRAR Bs 100","+100 ahorro · -Bs 100",()=>tomarDecision("ahorrar100"));
+   addBuildingOption("🏦 AHORRAR TODO LO POSIBLE","Guarda hasta Bs 200",()=>tomarDecision("ahorrar200"));
+ }else if(b.type==="cafeteria"){
+   desc.textContent="Decide si quieres gastar en ocio.";
+   addBuildingOption("☕ SALIR CON AMIGOS","-Bs 80 · +15 Felicidad · -10 Energía",()=>tomarDecision("amigos"));
+   addBuildingOption("🚶 NO GASTAR","Sin costo · conserva tu dinero",()=>tomarDecision("noGastar"));
+ }else if(b.type==="clinica"){
+   desc.textContent="Cuida tu bienestar.";
+   addBuildingOption("🩺 CONSULTA","-Bs 120 · +20 Felicidad · +15 Energía",()=>tomarDecision("clinica"));
+   addBuildingOption("💰 NO PAGAR","Sin costo · no recuperas bienestar",()=>tomarDecision("noGastar"));
+ }else if(b.type==="casa"){
+   desc.textContent=night?"Tu casa es el lugar donde termina el día y comienza el siguiente.":"Puedes volver a casa para prepararte, pero el día termina cuando llega la noche.";
+   if(night){
+     addBuildingOption("🛏️ DORMIR","Descansa y comienza un nuevo día al amanecer.",()=>dormir());
+   }else{
+     addBuildingOption("🏠 QUEDARTE EN CASA","No consume el día.",()=>cerrarEdificio());
+   }
+ }
+ panel.classList.remove("hidden");
+}
+
+function addBuildingOption(title,sub,fn){
+ const b=document.createElement("button");
+ b.className="building-option";
+ b.innerHTML=title+"<small>"+sub+"</small>";
+ b.onclick=fn;
+ document.getElementById("buildingOptions").appendChild(b);
+}
+
+function cerrarEdificio(){
+ activeBuilding=null;
+ document.getElementById("buildingPanel").classList.add("hidden");
+}
+
+function tomarDecision(type){
+ if(!gameRunning||paused||night)return;
+ let msg="";
+ if(type==="extra"){money+=260;energy-=25;happiness+=5;msg="Trabajaste tiempo extra."}
+ if(type==="salir"){money+=180;energy-=10;happiness+=2;msg="Saliste a tiempo del trabajo."}
+ if(type==="comida"){money-=45;energy+=10;msg="Compraste comida."}
+ if(type==="comidaGrande"){money-=100;energy+=20;msg="Hiciste una compra grande de comida."}
+ if(type==="ahorrar100"){let a=Math.min(100,Math.max(0,money));money-=a;saving+=a;msg="Ahorraste Bs "+a+"."}
+ if(type==="ahorrar200"){let a=Math.min(200,Math.max(0,money));money-=a;saving+=a;msg="Ahorraste Bs "+a+"."}
+ if(type==="amigos"){money-=80;happiness+=15;energy-=10;msg="Saliste con amigos."}
+ if(type==="clinica"){money-=120;happiness+=20;energy+=15;msg="Fuiste a la clínica."}
+ if(type==="noGastar"){msg="Decidiste no gastar dinero."}
+
+ if(money<0){debt+=Math.abs(money)*1.05;money=0}
+ happiness=Math.max(0,Math.min(100,happiness));
+ energy=Math.max(0,Math.min(100,energy));
+ updateHUD();cerrarEdificio();
+ alert(msg+"\\n\\n🌙 Al llegar la noche, vuelve a tu casa para descansar.");
+ night=true;
+}
+
+function iniciarNoche(){
+ if(!gameRunning)return;
+ night=true;
+ cerrarEdificio();
+ updateNearbyBuilding();
+}
+
+function dormir(){
+ if(!night||!nearbyBuilding||nearbyBuilding.type!=="casa")return;
+ night=false;
+ day++;
+ actionsToday=0;
+ energy=Math.min(100,energy+35);
+ happiness=Math.min(100,happiness+5);
+
+ // Salario cada 7 días.
+ if(day>1 && (day-1)%7===0) money+=700;
+
+ // Gastos obligatorios diarios.
+ money-=80;
+ if(day%7===0) money-=250;
+
+ if(money<0){debt+=Math.abs(money);money=0}
+ if(debt>2000||happiness<=0){derrota("La deuda superó Bs 2000 o la felicidad llegó a 0.");return}
+ if(day>30){victoria();return}
+
+ updateHUD();cerrarEdificio();
+ alert("🌅 ¡Amaneció! Comienza el día "+day+".");
+}
+
+function updateHUD(){
+ day<=30&&(document.getElementById("day").textContent=day+" / 30");
+ document.getElementById("money").textContent="Bs "+Math.round(money);
+ document.getElementById("saving").textContent="Bs "+Math.round(saving);
+ document.getElementById("debt").textContent="Bs "+Math.round(debt);
+ document.getElementById("happyText").textContent=Math.round(happiness);
+ document.getElementById("energyText").textContent=Math.round(energy);
+ document.getElementById("saveText").textContent=Math.round(saving)+" / 1000";
+ document.getElementById("happyFill").style.width=Math.max(0,happiness)+"%";
+ document.getElementById("energyFill").style.width=Math.max(0,energy)+"%";
+ document.getElementById("saveFill").style.width=Math.min(100,saving/10)+"%";
+}
+function startDay(){
+ actionsToday=0;
+ night=false;
+ if(day>1 && (day-1)%7===0){
+   money+=700;
+   alert("💼 Recibiste tu salario semanal de Bs 700.");
+ }
+ money-=80;
+ if(day%7===0)money-=250;
+ if(money<0){debt+=Math.abs(money);money=0}
+ updateHUD();
+ updateNearbyBuilding();
+}
+function accion(type){
+ // Las decisiones ahora se realizan únicamente al acercarse a un edificio.
+ // Se conserva esta función para compatibilidad con versiones anteriores.
+ if(nearbyBuilding) abrirEdificio(nearbyBuilding);
+}
+function eventoAleatorio(){
+ const events=[
+  {title:"🏥 Imprevisto médico",text:"Tienes un gasto inesperado de Bs 300.",opts:[
+   ["Pagar ahora",-300,0],["Ignorarlo y generar deuda",0,350]]},
+  {title:"🛍️ Oferta tentadora",text:"Una tienda ofrece un producto con descuento.",opts:[
+   ["Comprar por Bs 200",-200,0],["No comprar",0,0]]},
+  {title:"📈 Oportunidad de inversión",text:"Puedes destinar Bs 150 a una inversión educativa.",opts:[
+   ["Invertir", -150,120],["Guardar el dinero",0,0]]},
+  {title:"🎁 Regalo inesperado",text:"Un familiar te entrega Bs 100.",opts:[
+   ["Aceptar Bs 100",100,0],["Ahorrarlo directamente",0,-100]]}
+ ];
+ const e=events[Math.floor(Math.random()*events.length)];
+ document.getElementById("eventTitle").textContent=e.title;document.getElementById("eventText").textContent=e.text;
+ const box=document.getElementById("eventOptions");box.innerHTML="";
+ e.opts.forEach(o=>{const b=document.createElement("button");b.textContent=o[0];b.onclick=()=>{money+=o[1];saving+=o[2];if(money<0){debt+=Math.abs(money);money=0}document.getElementById("eventScreen").style.display="none";updateHUD();};box.appendChild(b)});
+ document.getElementById("eventScreen").style.display="flex";
+ paused=true;
+}
+function iniciarJuego(){
+ document.getElementById("menu").style.display="none";document.getElementById("game").style.display="block";
+ day=1;money=1500;saving=0;debt=0;happiness=80;energy=80;actionsToday=0;night=false;
+ player.x=2000;player.y=1500;gameRunning=true;paused=false;startDay();updateHUD();
+}
+function pausarJuego(){if(gameRunning){paused=true;document.getElementById("pauseScreen").style.display="flex"}}
+function continuarJuego(){paused=false;document.getElementById("pauseScreen").style.display="none"}
+function derrota(text){gameRunning=false;paused=false;document.getElementById("loseText").textContent=text;document.getElementById("gameOverScreen").style.display="flex"}
+function victoria(){gameRunning=false;paused=false;document.getElementById("winText").textContent="Terminaste los 30 días con Bs "+Math.round(saving)+" ahorrados. ¡Aprendiste a priorizar necesidades, ahorrar y evitar la deuda!";document.getElementById("victoryScreen").style.display="flex"}
+function reiniciarJuego(){document.querySelectorAll("#gameOverScreen,#victoryScreen,#pauseScreen").forEach(x=>x.style.display="none");iniciarJuego()}
+function volverAlMenu(){gameRunning=false;paused=false;nearbyBuilding=null;activeBuilding=null;night=false;document.querySelectorAll("#game,#gameOverScreen,#victoryScreen,#pauseScreen,#eventScreen").forEach(x=>x.style.display="none");document.getElementById("buildingPanel").classList.add("hidden");document.getElementById("menu").style.display="flex"}
+function mostrarControles(){alert("CONTROLES\n\nW / ↑: arriba\nS / ↓: abajo\nA / ←: izquierda\nD / →: derecha\n\nAdemás de explorar, debes tomar decisiones financieras desde el panel inferior izquierdo.")}
+function mostrarCreditos(){alert("SIMULADOR DE VIDA FINANCIERA\n\nProyecto Game Development\nHTML + CSS + JavaScript\n\nPersonajes: Mateo y Valeria")}
+  // Inicia el bucle DESPUÉS de declarar todas las variables y funciones.
+  loop();
+</script>
+</body>
+</html>

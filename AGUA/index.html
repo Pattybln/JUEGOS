@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+<title>Reto Gota a Gota 💧</title>
+
+<style>
+
+/* =========================================================
+   CONFIGURACIÓN GENERAL
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --azul:#1769aa;
+    --azul-oscuro:#0d3557;
+    --celeste:#dff5ff;
+    --verde:#43b96b;
+    --verde-oscuro:#25864a;
+    --rojo:#e95757;
+    --amarillo:#ffc83d;
+    --blanco:#ffffff;
+    --gris:#eef4f7;
+    --texto:#17324d;
+}
+
+body{
+    min-height:100vh;
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:
+        linear-gradient(
+            180deg,
+            #9de1ff 0%,
+            #dff7ff 45%,
+            #f7fcff 100%
+        );
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    color:var(--texto);
+}
+
+
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+========================================================= */
+
+#app{
+    width:100%;
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:20px;
+}
+
+
+/* =========================================================
+   PANTALLAS
+========================================================= */
+
+.screen{
+    display:none;
+    width:100%;
+    height:100%;
+}
+
+.screen.active{
+    display:flex;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+#menu{
+    justify-content:center;
+    align-items:center;
+}
+
+.menu-card{
+    width:min(500px,95vw);
+
+    background:white;
+
+    border-radius:30px;
+
+    padding:35px 30px;
+
+    text-align:center;
+
+    box-shadow:
+        0 20px 50px rgba(13,53,87,.22);
+
+    border:4px solid var(--azul-oscuro);
+}
+
+.logo{
+    font-size:70px;
+    margin-bottom:5px;
+}
+
+.menu-card h1{
+    font-size:42px;
+    color:var(--azul-oscuro);
+    margin-bottom:5px;
+}
+
+.menu-card h1 span{
+    color:var(--azul);
+}
+
+.subtitle{
+    font-size:16px;
+    color:#59748b;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+.mateo{
+    background:#edf9ff;
+    border-radius:18px;
+    padding:15px;
+    margin:15px 0;
+
+    font-size:15px;
+}
+
+.mateo strong{
+    color:var(--azul);
+}
+
+.best{
+    margin:12px 0;
+    font-weight:bold;
+    color:var(--azul);
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+button{
+    font-family:inherit;
+}
+
+.main-btn{
+    width:100%;
+    border:0;
+    border-radius:16px;
+
+    padding:15px;
+
+    margin-top:10px;
+
+    font-size:18px;
+    font-weight:800;
+
+    cursor:pointer;
+
+    transition:.15s;
+}
+
+.main-btn:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.04);
+}
+
+.main-btn:active{
+    transform:scale(.97);
+}
+
+.play{
+    background:var(--verde);
+    color:white;
+}
+
+.info{
+    background:#edf3f7;
+    color:var(--texto);
+}
+
+
+/* =========================================================
+   JUEGO
+========================================================= */
+
+#game{
+    justify-content:center;
+    align-items:center;
+}
+
+.game-layout{
+
+    width:min(1250px,100%);
+    height:min(760px,96vh);
+
+    display:grid;
+
+    grid-template-columns:
+        210px
+        minmax(400px,680px)
+        210px;
+
+    gap:18px;
+
+    align-items:stretch;
+}
+
+
+/* =========================================================
+   PANELES LATERALES
+========================================================= */
+
+.side-panel{
+    background:white;
+
+    border:4px solid var(--azul-oscuro);
+
+    border-radius:25px;
+
+    padding:15px;
+
+    box-shadow:
+        0 12px 30px rgba(13,53,87,.18);
+
+    display:flex;
+    flex-direction:column;
+
+    gap:12px;
+}
+
+.panel-title{
+    text-align:center;
+    font-weight:900;
+    color:var(--azul-oscuro);
+    font-size:14px;
+    text-transform:uppercase;
+}
+
+
+/* vidas */
+
+.lives{
+    display:flex;
+    justify-content:center;
+    gap:5px;
+
+    font-size:30px;
+}
+
+.life.lost{
+    filter:grayscale(1);
+    opacity:.25;
+}
+
+
+/* estadísticas */
+
+.stat{
+    background:#f1f8fc;
+    border-radius:14px;
+    padding:10px;
+    text-align:center;
+}
+
+.stat-label{
+    font-size:11px;
+    color:#68839a;
+    text-transform:uppercase;
+    font-weight:bold;
+}
+
+.stat-value{
+    font-size:24px;
+    font-weight:900;
+    color:var(--azul);
+    margin-top:2px;
+}
+
+
+/* progreso */
+
+.progress-box{
+    margin-top:auto;
+}
+
+.progress-text{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.progress{
+    height:12px;
+    background:#e4edf2;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--verde),
+            #72df91
+        );
+
+    transition:.3s;
+}
+
+
+/* =========================================================
+   TABLERO CENTRAL
+========================================================= */
+
+.board{
+    background:white;
+
+    border:4px solid var(--azul-oscuro);
+
+    border-radius:30px;
+
+    box-shadow:
+        0 15px 40px rgba(13,53,87,.22);
+
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+
+    min-height:0;
+}
+
+
+/* encabezado */
+
+.top-bar{
+    padding:12px 18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #effbff,
+            #ffffff
+        );
+
+    border-bottom:3px solid var(--azul-oscuro);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.level{
+    font-weight:900;
+    color:var(--azul);
+}
+
+.combo{
+    font-weight:900;
+    color:#e39c00;
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+.timer-area{
+    padding:10px 18px 5px;
+}
+
+.timer-label{
+    display:flex;
+    justify-content:space-between;
+
+    font-size:12px;
+    font-weight:bold;
+
+    margin-bottom:5px;
+}
+
+.timer{
+    width:100%;
+    height:15px;
+
+    background:#e8eef2;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+.timer-fill{
+    height:100%;
+    width:100%;
+
+    background:var(--verde);
+
+    transition:
+        width .1s linear,
+        background .3s;
+}
+
+
+/* =========================================================
+   ESCENA
+========================================================= */
+
+.scene{
+    flex:1;
+
+    min-height:0;
+
+    position:relative;
+
+    background:
+        linear-gradient(
+            180deg,
+            #bfeeff 0%,
+            #eafaff 60%,
+            #ffffff 100%
+        );
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:15px;
+}
+
+
+/* nube */
+
+.cloud{
+    position:absolute;
+
+    top:20px;
+    left:20px;
+
+    font-size:45px;
+
+    opacity:.7;
+}
+
+.cloud2{
+    position:absolute;
+
+    top:55px;
+    right:25px;
+
+    font-size:35px;
+
+    opacity:.55;
+}
+
+
+/* =========================================================
+   PERSONAJE
+========================================================= */
+
+.character-area{
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    gap:25px;
+
+    margin-bottom:10px;
+
+    width:100%;
+}
+
+.croc{
+    font-size:90px;
+
+    filter:
+        drop-shadow(
+            0 5px 3px rgba(0,0,0,.15)
+        );
+
+    transition:.2s;
+}
+
+.croc.happy{
+    animation:
+        bounce .5s infinite alternate;
+}
+
+.croc.sad{
+    filter:
+        grayscale(.6)
+        drop-shadow(
+            0 5px 3px rgba(0,0,0,.15)
+        );
+}
+
+@keyframes bounce{
+    from{
+        transform:translateY(0);
+    }
+
+    to{
+        transform:translateY(-8px);
+    }
+}
+
+
+/* gotas */
+
+.water-drop{
+    position:absolute;
+
+    font-size:35px;
+
+    animation:drop 1.2s infinite;
+
+    opacity:.8;
+}
+
+.drop1{
+    left:25%;
+    top:25%;
+}
+
+.drop2{
+    right:20%;
+    top:35%;
+
+    animation-delay:.4s;
+}
+
+@keyframes drop{
+
+    0%{
+        transform:translateY(-10px);
+        opacity:0;
+    }
+
+    50%{
+        opacity:1;
+    }
+
+    100%{
+        transform:translateY(20px);
+        opacity:0;
+    }
+}
+
+
+/* =========================================================
+   TARJETA DE RETO
+========================================================= */
+
+.challenge{
+    width:min(550px,100%);
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:20px;
+
+    box-shadow:
+        0 8px 25px rgba(23,105,170,.13);
+
+    border:2px solid #dcecf5;
+
+    text-align:center;
+
+    position:relative;
+
+    z-index:2;
+}
+
+.challenge-tag{
+    display:inline-block;
+
+    background:#e7f6ff;
+
+    color:var(--azul);
+
+    border-radius:20px;
+
+    padding:5px 12px;
+
+    font-size:12px;
+
+    font-weight:900;
+
+    margin-bottom:8px;
+}
+
+.challenge h2{
+    font-size:24px;
+
+    color:var(--azul-oscuro);
+
+    margin-bottom:8px;
+}
+
+.challenge p{
+    font-size:16px;
+
+    line-height:1.4;
+
+    margin-bottom:15px;
+}
+
+
+/* =========================================================
+   RESPUESTAS
+========================================================= */
+
+.answers{
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap:10px;
+}
+
+.answer{
+    border:3px solid #d9e8ef;
+
+    background:#f7fbfd;
+
+    border-radius:16px;
+
+    padding:14px 10px;
+
+    min-height:72px;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    color:var(--texto);
+
+    cursor:pointer;
+
+    transition:.15s;
+}
+
+.answer:hover{
+    transform:translateY(-3px);
+
+    border-color:var(--azul);
+
+    background:#effaff;
+}
+
+.answer.correct{
+    background:#dff8e7;
+    border-color:var(--verde);
+    color:#1c713b;
+}
+
+.answer.wrong{
+    background:#ffe1e1;
+    border-color:var(--rojo);
+    color:#a82d2d;
+}
+
+
+/* =========================================================
+   MENSAJE
+========================================================= */
+
+.feedback{
+
+    min-height:35px;
+
+    margin-top:10px;
+
+    font-size:14px;
+
+    font-weight:800;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+}
+
+
+/* =========================================================
+   PANEL DERECHO
+========================================================= */
+
+.tip{
+    background:#fff8dd;
+
+    border:2px solid #f5d46b;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    font-size:13px;
+
+    line-height:1.4;
+}
+
+.tip strong{
+    display:block;
+
+    color:#9a7200;
+
+    margin-bottom:4px;
+}
+
+.challenge-number{
+    text-align:center;
+
+    font-size:13px;
+
+    color:#6d879a;
+}
+
+
+/* =========================================================
+   FIN
+========================================================= */
+
+#end{
+    justify-content:center;
+    align-items:center;
+}
+
+.end-card{
+
+    width:min(550px,95vw);
+
+    background:white;
+
+    border:4px solid var(--azul-oscuro);
+
+    border-radius:30px;
+
+    padding:30px;
+
+    text-align:center;
+
+    box-shadow:
+        0 20px 50px rgba(13,53,87,.22);
+}
+
+.end-emoji{
+    font-size:70px;
+    margin-bottom:10px;
+}
+
+.end-card h1{
+    color:var(--azul-oscuro);
+    margin-bottom:8px;
+}
+
+.result{
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:10px;
+
+    margin:20px 0;
+}
+
+.result-item{
+    background:#f0f8fc;
+
+    border-radius:15px;
+
+    padding:14px;
+}
+
+.result-item small{
+    display:block;
+
+    color:#6d879a;
+
+    font-size:11px;
+
+    font-weight:bold;
+
+    text-transform:uppercase;
+}
+
+.result-item strong{
+    font-size:25px;
+
+    color:var(--azul);
+}
+
+.final-message{
+    font-size:15px;
+    line-height:1.5;
+
+    color:#557086;
+
+    margin-bottom:15px;
+}
+
+
+/* =========================================================
+   HOW TO
+========================================================= */
+
+#howto{
+    justify-content:center;
+    align-items:center;
+}
+
+.how-card{
+
+    width:min(600px,95vw);
+
+    background:white;
+
+    border-radius:28px;
+
+    padding:30px;
+
+    border:4px solid var(--azul-oscuro);
+
+    box-shadow:
+        0 20px 50px rgba(13,53,87,.22);
+}
+
+.how-card h1{
+    text-align:center;
+
+    color:var(--azul-oscuro);
+
+    margin-bottom:20px;
+}
+
+.how-item{
+
+    display:flex;
+
+    gap:15px;
+
+    align-items:flex-start;
+
+    padding:12px;
+
+    background:#f3f9fc;
+
+    border-radius:15px;
+
+    margin-bottom:10px;
+}
+
+.how-icon{
+    font-size:30px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+    body{
+        overflow:auto;
+    }
+
+    #app{
+        height:auto;
+        min-height:100vh;
+        padding:10px;
+    }
+
+    .game-layout{
+
+        height:auto;
+        min-height:95vh;
+
+        grid-template-columns:
+            1fr;
+
+        grid-template-rows:
+            auto
+            auto
+            auto;
+
+        gap:10px;
+    }
+
+    .side-panel{
+        display:grid;
+
+        grid-template-columns:
+            repeat(4,1fr);
+
+        padding:8px;
+
+        gap:7px;
+    }
+
+    .side-panel .panel-title,
+    .side-panel .tip,
+    .side-panel .progress-box{
+        display:none;
+    }
+
+    .stat{
+        padding:7px;
+    }
+
+    .stat-value{
+        font-size:19px;
+    }
+
+    .lives{
+        font-size:22px;
+    }
+
+    .board{
+        min-height:680px;
+    }
+
+    .game-layout .left-panel{
+        order:1;
+    }
+
+    .game-layout .board{
+        order:2;
+    }
+
+    .game-layout .right-panel{
+        order:3;
+    }
+
+    .right-panel{
+        display:flex;
+        flex-direction:row;
+        justify-content:center;
+    }
+
+    .right-panel .stat{
+        flex:1;
+    }
+
+}
+
+@media(max-width:500px){
+
+    .menu-card{
+        padding:25px 18px;
+    }
+
+    .menu-card h1{
+        font-size:32px;
+    }
+
+    .croc{
+        font-size:70px;
+    }
+
+    .challenge h2{
+        font-size:20px;
+    }
+
+    .challenge p{
+        font-size:14px;
+    }
+
+    .answer{
+        font-size:13px;
+        min-height:80px;
+    }
+
+    .board{
+        min-height:650px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+
+<!-- =====================================================
+     MENÚ
+===================================================== -->
+
+<section id="menu" class="screen active">
+
+    <div class="menu-card">
+
+        <div class="logo">
+            💧🐊
+        </div>
+
+        <h1>
+            Reto <span>Gota a Gota</span>
+        </h1>
+
+        <p class="subtitle">
+            ¡Toma decisiones rápidas, salva agua y ayuda a Coco
+            a tener un baño perfecto!
+        </p>
+
+        <div class="mateo">
+
+            👨🏽‍🎓 <strong>Mateo:</strong>
+
+            <br>
+
+            "Quiero ahorrar agua, pero quiero saber
+            realmente cuánto puedo ahorrar."
+
+        </div>
+
+        <div class="best">
+            🏆 Mejor puntuación:
+            <span id="menuBest">0</span>
+        </div>
+
+        <button
+            class="main-btn play"
+            onclick="iniciarJuego()">
+
+            ▶ JUGAR
+
+        </button>
+
+        <button
+            class="main-btn info"
+            onclick="mostrarComoJugar()">
+
+            ❓ ¿CÓMO SE JUEGA?
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     COMO JUGAR
+===================================================== -->
+
+<section id="howto" class="screen">
+
+    <div class="how-card">
+
+        <h1>
+            💧 ¿Cómo se juega?
+        </h1>
+
+        <div class="how-item">
+
+            <div class="how-icon">⏱️</div>
+
+            <div>
+                <strong>¡Tienes poco tiempo!</strong>
+
+                <p>
+                    Cada situación tiene un límite de tiempo.
+                    Piensa rápido y elige.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="how-item">
+
+            <div class="how-icon">❤️</div>
+
+            <div>
+                <strong>Tienes 3 vidas</strong>
+
+                <p>
+                    Si eliges mal, pierdes una vida.
+                    Si pierdes todas, Coco no podrá bañarse.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="how-item">
+
+            <div class="how-icon">💧</div>
+
+            <div>
+                <strong>Ahorra litros</strong>
+
+                <p>
+                    Cada buena decisión representa agua
+                    que puedes evitar desperdiciar.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="how-item">
+
+            <div class="how-icon">🔥</div>
+
+            <div>
+                <strong>Construye una racha</strong>
+
+                <p>
+                    Responde correctamente varias veces seguidas
+                    para conseguir más puntos.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="how-item">
+
+            <div class="how-icon">🔀</div>
+
+            <div>
+                <strong>¡Nunca memorices!</strong>
+
+                <p>
+                    En cada partida las situaciones y la posición
+                    de las respuestas cambian.
+                </p>
+
+            </div>
+
+        </div>
+
+        <button
+            class="main-btn play"
+            onclick="mostrarMenu()">
+
+            ← VOLVER
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     JUEGO
+===================================================== -->
+
+<section id="game" class="screen">
+
+    <div class="game-layout">
+
+
+        <!-- ===============================
+             PANEL IZQUIERDO
+        ================================ -->
+
+        <aside class="side-panel left-panel">
+
+            <div class="panel-title">
+                Tu partida
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Vidas
+                </div>
+
+                <div
+                    id="lives"
+                    class="lives">
+
+                    ❤️❤️❤️
+
+                </div>
+
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Puntos
+                </div>
+
+                <div
+                    id="score"
+                    class="stat-value">
+
+                    0
+
+                </div>
+
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Litros ahorrados
+                </div>
+
+                <div
+                    id="saved"
+                    class="stat-value">
+
+                    0 L
+
+                </div>
+
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Racha
+                </div>
+
+                <div
+                    id="streak"
+                    class="stat-value">
+
+                    x0
+
+                </div>
+
+            </div>
+
+            <div class="progress-box">
+
+                <div class="progress-text">
+
+                    <span>Progreso</span>
+
+                    <span id="progressText">
+                        0/10
+                    </span>
+
+                </div>
+
+                <div class="progress">
+
+                    <div
+                        id="progressFill"
+                        class="progress-fill">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ===============================
+             TABLERO
+        ================================ -->
+
+        <main class="board">
+
+            <div class="top-bar">
+
+                <div
+                    id="levelText"
+                    class="level">
+
+                    RETO 1
+
+                </div>
+
+                <div
+                    id="comboText"
+                    class="combo">
+
+                    🔥 ¡EMPIEZA!
+
+                </div>
+
+            </div>
+
+
+            <!-- TIMER -->
+
+            <div class="timer-area">
+
+                <div class="timer-label">
+
+                    <span>
+                        ⏱️ ¡Decide rápido!
+                    </span>
+
+                    <span id="timerNumber">
+                        5
+                    </span>
+
+                </div>
+
+                <div class="timer">
+
+                    <div
+                        id="timerFill"
+                        class="timer-fill">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ESCENA -->
+
+            <div class="scene">
+
+                <div class="cloud">
+                    ☁️
+                </div>
+
+                <div class="cloud2">
+                    ☁️
+                </div>
+
+                <div class="water-drop drop1">
+                    💧
+                </div>
+
+                <div class="water-drop drop2">
+                    💧
+                </div>
+
+
+                <!-- PERSONAJE -->
+
+                <div class="character-area">
+
+                    <div
+                        id="croc"
+                        class="croc">
+
+                        🐊
+
+                    </div>
+
+                </div>
+
+
+                <!-- RETO -->
+
+                <div class="challenge">
+
+                    <div
+                        id="challengeTag"
+                        class="challenge-tag">
+
+                        🚰 SITUACIÓN
+
+                    </div>
+
+                    <h2 id="questionTitle">
+                        Preparando el reto...
+                    </h2>
+
+                    <p id="questionText">
+                    </p>
+
+                    <div
+                        id="answers"
+                        class="answers">
+                    </div>
+
+                    <div
+                        id="feedback"
+                        class="feedback">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+
+        <!-- ===============================
+             PANEL DERECHO
+        ================================ -->
+
+        <aside class="side-panel right-panel">
+
+            <div class="panel-title">
+                Aprende jugando
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Meta
+                </div>
+
+                <div class="stat-value">
+                    70%
+                </div>
+
+            </div>
+
+            <div class="stat">
+
+                <div class="stat-label">
+                    Nivel
+                </div>
+
+                <div
+                    id="rightLevel"
+                    class="stat-value">
+
+                    1
+
+                </div>
+
+            </div>
+
+            <div class="tip">
+
+                <strong>
+                    💡 CONSEJO
+                </strong>
+
+                <span id="tipText">
+                    Piensa en cuánto tiempo dejas
+                    el agua corriendo.
+                </span>
+
+            </div>
+
+            <div class="tip">
+
+                <strong>
+                    🎯 RETO
+                </strong>
+
+                <span>
+                    Intenta superar tu puntuación
+                    anterior.
+                </span>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     FIN DEL JUEGO
+===================================================== -->
+
+<section id="end" class="screen">
+
+    <div class="end-card">
+
+        <div
+            id="endEmoji"
+            class="end-emoji">
+
+            🐊💧
+
+        </div>
+
+        <h1 id="endTitle">
+            ¡Buen trabajo!
+        </h1>
+
+        <p
+            id="endMessage"
+            class="final-message">
+
+        </p>
+
+
+        <div class="result">
+
+            <div class="result-item">
+
+                <small>
+                    Puntos
+                </small>
+
+                <strong id="finalScore">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="result-item">
+
+                <small>
+                    Agua ahorrada
+                </small>
+
+                <strong id="finalSaved">
+                    0 L
+                </strong>
+
+            </div>
+
+            <div class="result-item">
+
+                <small>
+                    Racha máxima
+                </small>
+
+                <strong id="finalStreak">
+                    x0
+                </strong>
+
+            </div>
+
+            <div class="result-item">
+
+                <small>
+                    Mejor puntuación
+                </small>
+
+                <strong id="finalBest">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <p
+            id="motivation"
+            class="final-message">
+
+        </p>
+
+
+        <button
+            class="main-btn play"
+            onclick="iniciarJuego()">
+
+            🔄 JUGAR OTRA VEZ
+
+        </button>
+
+        <button
+            class="main-btn info"
+            onclick="mostrarMenu()">
+
+            🏠 MENÚ PRINCIPAL
+
+        </button>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   DATOS DEL JUEGO
+========================================================= */
+
+const niveles = [
+
+    {
+        titulo:"🚿 La ducha de Mateo",
+
+        pregunta:
+        "Mateo está duchándose y lleva 10 minutos escuchando música. ¿Qué debería hacer?",
+
+        buena:
+        "🚰 Cerrar el agua mientras se enjabona",
+
+        mala:
+        "🎵 Seguir con el agua abierta",
+
+        litros:35,
+
+        tiempo:6,
+
+        consejo:
+        "Cerrar el agua mientras te enjabonas puede reducir mucho el desperdicio."
+    },
+
+
+    {
+        titulo:"🪥 Cepillándose los dientes",
+
+        pregunta:
+        "Mateo está cepillándose los dientes. ¿Qué decisión ahorra más agua?",
+
+        buena:
+        "🚰 Cerrar el grifo mientras se cepilla",
+
+        mala:
+        "💦 Dejar el grifo abierto",
+
+        litros:8,
+
+        tiempo:5,
+
+        consejo:
+        "No necesitas agua corriendo durante todo el cepillado."
+    },
+
+
+    {
+        titulo:"🍽️ Lavando los platos",
+
+        pregunta:
+        "Mateo tiene varios platos con comida. ¿Cuál opción es mejor?",
+
+        buena:
+        "🫧 Enjabonar con el grifo cerrado",
+
+        mala:
+        "🌊 Mantener el agua corriendo",
+
+        litros:18,
+
+        tiempo:5,
+
+        consejo:
+        "Enjabonar varios platos antes de enjuagarlos ayuda a reducir el consumo."
+    },
+
+
+    {
+        titulo:"🧹 Limpiando la casa",
+
+        pregunta:
+        "Mateo necesita limpiar el piso. ¿Qué debería utilizar?",
+
+        buena:
+        "🪣 Un balde con agua controlada",
+
+        mala:
+        "🌊 Una manguera abierta",
+
+        litros:25,
+
+        tiempo:5,
+
+        consejo:
+        "Un balde te permite controlar exactamente cuánta agua utilizas."
+    },
+
+
+    {
+        titulo:"🌱 Regando las plantas",
+
+        pregunta:
+        "Las plantas de la casa necesitan agua. ¿Qué opción es mejor?",
+
+        buena:
+        "🌱 Regar solo lo necesario",
+
+        mala:
+        "🌊 Dejar el agua corriendo",
+
+        litros:12,
+
+        tiempo:5,
+
+        consejo:
+        "Regar temprano o al final de la tarde también ayuda a evitar evaporación."
+    },
+
+
+    {
+        titulo:"🔧 Una fuga en casa",
+
+        pregunta:
+        "Mateo escucha un pequeño goteo debajo del lavamanos. ¿Qué hace?",
+
+        buena:
+        "🔧 Revisar la fuga y avisar",
+
+        mala:
+        "😴 Ignorarla",
+
+        litros:30,
+
+        tiempo:5,
+
+        consejo:
+        "Una fuga pequeña puede desperdiciar muchos litros con el tiempo."
+    },
+
+
+    {
+        titulo:"🚗 Lavando la bicicleta",
+
+        pregunta:
+        "Mateo quiere lavar su bicicleta. ¿Qué opción desperdicia menos?",
+
+        buena:
+        "🪣 Utilizar un balde",
+
+        mala:
+        "🌊 Dejar la manguera abierta",
+
+        litros:20,
+
+        tiempo:5,
+
+        consejo:
+        "Un recipiente ayuda a controlar mejor la cantidad de agua utilizada."
+    },
+
+
+    {
+        titulo:"☕ Preparando el desayuno",
+
+        pregunta:
+        "Mateo necesita llenar un vaso. ¿Qué debería evitar?",
+
+        buena:
+        "💧 Servir solamente lo necesario",
+
+        mala:
+        "🌊 Dejar correr el agua mientras busca el vaso",
+
+        litros:6,
+
+        tiempo:5,
+
+        consejo:
+        "Preparar primero el vaso evita que el grifo quede abierto innecesariamente."
+    },
+
+
+    {
+        titulo:"🛁 El baño de Coco",
+
+        pregunta:
+        "Coco ya tiene suficiente agua para bañarse. ¿Qué haces?",
+
+        buena:
+        "🚰 Cerrar el agua",
+
+        mala:
+        "💦 Seguir llenando la bañera",
+
+        litros:22,
+
+        tiempo:4,
+
+        consejo:
+        "Cerrar el grifo cuando ya tienes suficiente evita desperdiciar agua."
+    },
+
+
+    {
+        titulo:"🥤 Agua que sobró",
+
+        pregunta:
+        "Mateo tiene agua limpia que sobró en un vaso. ¿Qué podría hacer?",
+
+        buena:
+        "🌱 Usarla para regar una planta",
+
+        mala:
+        "🗑️ Tirarla directamente",
+
+        litros:4,
+
+        tiempo:5,
+
+        consejo:
+        "Algunas sobras de agua limpia pueden reutilizarse."
+    },
+
+
+    {
+        titulo:"🚿 El cabello",
+
+        pregunta:
+        "Mateo está poniéndose champú. ¿Qué debería hacer con el agua?",
+
+        buena:
+        "🚰 Cerrar el agua durante el champú",
+
+        mala:
+        "💦 Dejarla corriendo",
+
+        litros:20,
+
+        tiempo:5,
+
+        consejo:
+        "Cerrar el agua durante el champú es una de las acciones más fáciles."
+    },
+
+
+    {
+        titulo:"🧼 Lavándose las manos",
+
+        pregunta:
+        "Mateo se está enjabonando las manos. ¿Qué hace?",
+
+        buena:
+        "🚰 Cerrar el grifo mientras se enjabona",
+
+        mala:
+        "💦 Mantenerlo abierto",
+
+        litros:6,
+
+        tiempo:5,
+
+        consejo:
+        "Solo necesitas abrir el grifo para mojar y enjuagar."
+    },
+
+
+    {
+        titulo:"🍳 Cocinando",
+
+        pregunta:
+        "Mateo está cocinando y necesita lavar algunas verduras.",
+
+        buena:
+        "🥣 Lavarlas en un recipiente",
+
+        mala:
+        "🌊 Dejarlas bajo el grifo abierto",
+
+        litros:10,
+
+        tiempo:5,
+
+        consejo:
+        "Un recipiente permite lavar alimentos utilizando menos agua."
+    },
+
+
+    {
+        titulo:"🌧️ Día de lluvia",
+
+        pregunta:
+        "Está lloviendo y Mateo tiene recipientes limpios afuera.",
+
+        buena:
+        "🌧️ Aprovechar el agua de lluvia para las plantas",
+
+        mala:
+        "🚿 Usar agua potable para todo",
+
+        litros:15,
+
+        tiempo:6,
+
+        consejo:
+        "Cuando sea seguro y apropiado, el agua de lluvia puede servir para algunas tareas."
+    },
+
+
+    {
+        titulo:"🧽 Limpiando la cocina",
+
+        pregunta:
+        "Mateo necesita limpiar la mesa. ¿Qué opción es mejor?",
+
+        buena:
+        "🧽 Usar un paño húmedo",
+
+        mala:
+        "🌊 Mojar toda la superficie con el grifo",
+
+        litros:8,
+
+        tiempo:5,
+
+        consejo:
+        "No necesitas grandes cantidades de agua para limpiar una superficie."
+    },
+
+
+    {
+        titulo:"🚽 El inodoro",
+
+        pregunta:
+        "Mateo nota que el inodoro sigue haciendo ruido después de descargarlo.",
+
+        buena:
+        "🔧 Revisar si existe una fuga",
+
+        mala:
+        "😴 Ignorar el ruido",
+
+        litros:25,
+
+        tiempo:5,
+
+        consejo:
+        "Un inodoro con fuga puede desperdiciar agua constantemente."
+    },
+
+
+    {
+        titulo:"🧺 Lavadora",
+
+        pregunta:
+        "Mateo tiene poca ropa para lavar. ¿Qué decisión es mejor?",
+
+        buena:
+        "👕 Esperar a tener una carga adecuada",
+
+        mala:
+        "🌊 Usar la lavadora casi vacía",
+
+        litros:40,
+
+        tiempo:6,
+
+        consejo:
+        "Usar cargas adecuadas evita gastar agua innecesariamente."
+    },
+
+
+    {
+        titulo:"🚰 El último reto",
+
+        pregunta:
+        "Mateo quiere convertirse en un experto ahorrador. ¿Qué hace?",
+
+        buena:
+        "🏆 Convertir pequeños hábitos en una rutina",
+
+        mala:
+        "🤷 No cambiar nada",
+
+        litros:50,
+
+        tiempo:5,
+
+        consejo:
+        "Los pequeños cambios repetidos todos los días pueden generar un gran ahorro."
+    }
+
+];
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let preguntasPartida = [];
+
+let nivelActual = 0;
+
+let vidas = 3;
+
+let puntos = 0;
+
+let ahorro = 0;
+
+let racha = 0;
+
+let rachaMaxima = 0;
+
+let bloqueado = false;
+
+let timerInterval = null;
+
+let tiempoRestante = 0;
+
+let tiempoTotal = 0;
+
+let ultimaPartida = [];
+
+
+/* =========================================================
+   ELEMENTOS
+========================================================= */
+
+const menu =
+    document.getElementById("menu");
+
+const howto =
+    document.getElementById("howto");
+
+const game =
+    document.getElementById("game");
+
+const end =
+    document.getElementById("end");
+
+
+/* =========================================================
+   CAMBIAR PANTALLA
+========================================================= */
+
+function cambiarPantalla(pantalla){
+
+    [menu,howto,game,end]
+        .forEach(s =>
+            s.classList.remove("active")
+        );
+
+    pantalla.classList.add("active");
+}
+
+
+function mostrarMenu(){
+
+    detenerTimer();
+
+    cambiarPantalla(menu);
+
+    actualizarMejorPuntuacion();
+}
+
+
+function mostrarComoJugar(){
+
+    cambiarPantalla(howto);
+
+}
+
+
+/* =========================================================
+   MEJOR PUNTUACIÓN
+========================================================= */
+
+function obtenerMejor(){
+
+    return Number(
+        localStorage.getItem(
+            "reto_gota_mejor"
+        ) || 0
+    );
+
+}
+
+
+function guardarMejor(){
+
+    const mejor =
+        obtenerMejor();
+
+    if(puntos > mejor){
+
+        localStorage.setItem(
+            "reto_gota_mejor",
+            puntos
+        );
+
+        return puntos;
+
+    }
+
+    return mejor;
+}
+
+
+function actualizarMejorPuntuacion(){
+
+    document.getElementById(
+        "menuBest"
+    ).textContent =
+        obtenerMejor();
+
+}
+
+
+/* =========================================================
+   MEZCLAR ARRAY
+========================================================= */
+
+function mezclar(array){
+
+    const copia =
+        [...array];
+
+    for(
+        let i=copia.length-1;
+        i>0;
+        i--
+    ){
+
+        const j =
+            Math.floor(
+                Math.random()*(i+1)
+            );
+
+        [
+            copia[i],
+            copia[j]
+        ] =
+        [
+            copia[j],
+            copia[i]
+        ];
+
+    }
+
+    return copia;
+}
+
+
+/* =========================================================
+   INICIAR PARTIDA
+========================================================= */
+
+function iniciarJuego(){
+
+    detenerTimer();
+
+    nivelActual = 0;
+
+    vidas = 3;
+
+    puntos = 0;
+
+    ahorro = 0;
+
+    racha = 0;
+
+    rachaMaxima = 0;
+
+    bloqueado = false;
+
+
+    /*
+       Mezclamos las preguntas.
+    */
+
+    preguntasPartida =
+        mezclar(niveles);
+
+
+    /*
+       Evitamos que dos partidas consecutivas
+       tengan exactamente el mismo orden.
+    */
+
+    if(
+        ultimaPartida.length > 0 &&
+        preguntasPartida.every(
+            (pregunta,index) =>
+            pregunta.titulo ===
+            ultimaPartida[index]
+        )
+    ){
+
+        preguntasPartida =
+            mezclar(niveles);
+
+    }
+
+
+    ultimaPartida =
+        preguntasPartida.map(
+            pregunta =>
+            pregunta.titulo
+        );
+
+
+    actualizarHUD();
+
+    cambiarPantalla(game);
+
+    cargarNivel();
+
+}
+
+
+/* =========================================================
+   CARGAR NIVEL
+========================================================= */
+
+function cargarNivel(){
+
+    detenerTimer();
+
+    bloqueado = false;
+
+
+    if(nivelActual >= preguntasPartida.length){
+
+        terminarJuego();
+
+        return;
+
+    }
+
+
+    const nivel =
+        preguntasPartida[nivelActual];
+
+
+    document.getElementById(
+        "levelText"
+    ).textContent =
+        "RETO " +
+        (nivelActual + 1);
+
+
+    document.getElementById(
+        "rightLevel"
+    ).textContent =
+        nivelActual + 1;
+
+
+    document.getElementById(
+        "questionTitle"
+    ).textContent =
+        nivel.titulo;
+
+
+    document.getElementById(
+        "questionText"
+    ).textContent =
+        nivel.pregunta;
+
+
+    document.getElementById(
+        "tipText"
+    ).textContent =
+        nivel.consejo;
+
+
+    document.getElementById(
+        "feedback"
+    ).textContent =
+        "";
+
+
+    document.getElementById(
+        "croc"
+    ).className =
+        "croc";
+
+
+    const answers =
+        document.getElementById(
+            "answers"
+        );
+
+
+    answers.innerHTML = "";
+
+
+    /*
+       Creamos las dos respuestas.
+    */
+
+    let opciones = [
+
+        {
+            texto:nivel.buena,
+            correcta:true
+        },
+
+        {
+            texto:nivel.mala,
+            correcta:false
+        }
+
+    ];
+
+
+    /*
+       IMPORTANTE:
+
+       Aquí se mezclan las respuestas.
+
+       Por eso la correcta puede aparecer
+       a la izquierda o a la derecha.
+    */
+
+    opciones =
+        mezclar(opciones);
+
+
+    opciones.forEach(
+        opcion => {
+
+            const boton =
+                document.createElement(
+                    "button"
+                );
+
+
+            boton.className =
+                "answer";
+
+
+            boton.textContent =
+                opcion.texto;
+
+
+            boton.onclick =
+                () =>
+                responder(
+                    opcion.correcta,
+                    boton
+                );
+
+
+            answers.appendChild(
+                boton
+            );
+
+        }
+    );
+
+
+    tiempoTotal =
+        nivel.tiempo;
+
+
+    tiempoRestante =
+        nivel.tiempo;
+
+
+    actualizarTimerVisual();
+
+    iniciarTimer();
+
+    actualizarHUD();
+
+}
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function iniciarTimer(){
+
+    detenerTimer();
+
+
+    timerInterval =
+        setInterval(
+
+            () => {
+
+                tiempoRestante -= 0.1;
+
+
+                if(
+                    tiempoRestante <= 0
+                ){
+
+                    tiempoRestante = 0;
+
+                    actualizarTimerVisual();
+
+                    detenerTimer();
+
+                    tiempoAgotado();
+
+                    return;
+
+                }
+
+
+                actualizarTimerVisual();
+
+            },
+
+            100
+
+        );
+
+}
+
+
+function detenerTimer(){
+
+    if(timerInterval){
+
+        clearInterval(
+            timerInterval
+        );
+
+        timerInterval = null;
+
+    }
+
+}
+
+
+function actualizarTimerVisual(){
+
+    const porcentaje =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                (tiempoRestante /
+                tiempoTotal) * 100
+            )
+        );
+
+
+    const fill =
+        document.getElementById(
+            "timerFill"
+        );
+
+
+    fill.style.width =
+        porcentaje + "%";
+
+
+    document.getElementById(
+        "timerNumber"
+    ).textContent =
+        Math.ceil(
+            tiempoRestante
+        );
+
+
+    if(porcentaje <= 30){
+
+        fill.style.background =
+            "var(--rojo)";
+
+    }
+
+    else if(porcentaje <= 60){
+
+        fill.style.background =
+            "var(--amarillo)";
+
+    }
+
+    else{
+
+        fill.style.background =
+            "var(--verde)";
+
+    }
+
+}
+
+
+/* =========================================================
+   TIEMPO AGOTADO
+========================================================= */
+
+function tiempoAgotado(){
+
+    if(bloqueado)
+        return;
+
+
+    bloqueado = true;
+
+
+    vidas--;
+
+    racha = 0;
+
+
+    document.getElementById(
+        "feedback"
+    ).textContent =
+        "⏰ ¡Se acabó el tiempo!";
+
+
+    document.getElementById(
+        "croc"
+    ).className =
+        "croc sad";
+
+
+    document.getElementById(
+        "comboText"
+    ).textContent =
+        "💦 ¡Agua desperdiciada!";
+
+
+    actualizarHUD();
+
+
+    setTimeout(
+
+        () => {
+
+            if(vidas <= 0){
+
+                terminarJuego();
+
+            }
+
+            else{
+
+                nivelActual++;
+
+                cargarNivel();
+
+            }
+
+        },
+
+        1300
+
+    );
+
+}
+
+
+/* =========================================================
+   RESPONDER
+========================================================= */
+
+function responder(correcta,boton){
+
+    if(bloqueado)
+        return;
+
+
+    bloqueado = true;
+
+    detenerTimer();
+
+
+    const nivel =
+        preguntasPartida[nivelActual];
+
+
+    if(correcta){
+
+        /* =========================
+           RESPUESTA CORRECTA
+        ========================== */
+
+        boton.classList.add(
+            "correct"
+        );
+
+
+        racha++;
+
+
+        if(
+            racha >
+            rachaMaxima
+        ){
+
+            rachaMaxima =
+                racha;
+
+        }
+
+
+        /*
+           Puntos adicionales por racha.
+        */
+
+        const bonus =
+            Math.max(
+                0,
+                (racha - 1) * 10
+            );
+
+
+        const puntosGanados =
+            100 + bonus;
+
+
+        puntos +=
+            puntosGanados;
+
+
+        ahorro +=
+            nivel.litros;
+
+
+        document.getElementById(
+            "feedback"
+        ).textContent =
+            "💧 ¡Correcto! +" +
+            nivel.litros +
+            " L ahorrados";
+
+
+        document.getElementById(
+            "croc"
+        ).className =
+            "croc happy";
+
+
+        document.getElementById(
+            "comboText"
+        ).textContent =
+            racha >= 3
+            ? "🔥 ¡RACHA x" + racha + "!"
+            : "💧 ¡MUY BIEN!";
+
+
+        actualizarHUD();
+
+
+        setTimeout(
+
+            () => {
+
+                nivelActual++;
+
+                cargarNivel();
+
+            },
+
+            1000
+
+        );
+
+    }
+
+    else{
+
+        /* =========================
+           RESPUESTA INCORRECTA
+        ========================== */
+
+        boton.classList.add(
+            "wrong"
+        );
+
+
+        racha = 0;
+
+        vidas--;
+
+
+        document.getElementById(
+            "feedback"
+        ).textContent =
+            "💦 ¡Cuidado! Desperdiciaste agua";
+
+
+        document.getElementById(
+            "croc"
+        ).className =
+            "croc sad";
+
+
+        document.getElementById(
+            "comboText"
+        ).textContent =
+            "💦 ¡Racha perdida!";
+
+
+        actualizarHUD();
+
+
+        setTimeout(
+
+            () => {
+
+                if(vidas <= 0){
+
+                    terminarJuego();
+
+                }
+
+                else{
+
+                    nivelActual++;
+
+                    cargarNivel();
+
+                }
+
+            },
+
+            1200
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function actualizarHUD(){
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        puntos;
+
+
+    document.getElementById(
+        "saved"
+    ).textContent =
+        ahorro + " L";
+
+
+    document.getElementById(
+        "streak"
+    ).textContent =
+        "x" + racha;
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+        Math.min(
+            nivelActual,
+            preguntasPartida.length
+        )
+        + "/" +
+        preguntasPartida.length;
+
+
+    const porcentaje =
+        preguntasPartida.length
+        ?
+        (
+            nivelActual /
+            preguntasPartida.length
+        ) * 100
+        :
+        0;
+
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        porcentaje + "%";
+
+
+    let corazones = "";
+
+
+    for(
+        let i=0;
+        i<3;
+        i++
+    ){
+
+        corazones +=
+            i < vidas
+            ? "❤️"
+            : "🖤";
+
+    }
+
+
+    document.getElementById(
+        "lives"
+    ).textContent =
+        corazones;
+
+}
+
+
+/* =========================================================
+   TERMINAR PARTIDA
+========================================================= */
+
+function terminarJuego(){
+
+    detenerTimer();
+
+
+    const mejor =
+        guardarMejor();
+
+
+    const porcentaje =
+        Math.round(
+            (ahorro /
+            300) * 100
+        );
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        puntos;
+
+
+    document.getElementById(
+        "finalSaved"
+    ).textContent =
+        ahorro + " L";
+
+
+    document.getElementById(
+        "finalStreak"
+    ).textContent =
+        "x" + rachaMaxima;
+
+
+    document.getElementById(
+        "finalBest"
+    ).textContent =
+        mejor;
+
+
+    const emoji =
+        document.getElementById(
+            "endEmoji"
+        );
+
+
+    const title =
+        document.getElementById(
+            "endTitle"
+        );
+
+
+    const message =
+        document.getElementById(
+            "endMessage"
+        );
+
+
+    const motivation =
+        document.getElementById(
+            "motivation"
+        );
+
+
+    if(vidas <= 0){
+
+        emoji.textContent =
+            "🐊💦😢";
+
+
+        title.textContent =
+            "EL COCODRILO NO PUDO BAÑARSE CORRECTAMENTE";
+
+
+        message.textContent =
+            "Coco se quedó sin su baño porque se desperdició demasiada agua. ¡Pero puedes intentarlo otra vez!";
+
+
+        motivation.textContent =
+            "🎯 No memorices las respuestas. Cada partida cambia. Intenta superar tu puntuación y construir una racha más grande.";
+
+    }
+
+    else if(
+        rachaMaxima >= 7
+    ){
+
+        emoji.textContent =
+            "🐊🏆💧";
+
+
+        title.textContent =
+            "¡ERES UN EXPERTO EN AHORRO!";
+
+
+        message.textContent =
+            "¡Coco tuvo un baño increíble y Mateo demostró que pequeños cambios pueden ahorrar muchos litros!";
+
+
+        motivation.textContent =
+            "🔥 ¡Ahora intenta superar tu récord! ¿Puedes conseguir una racha todavía mayor?";
+
+    }
+
+    else if(
+        ahorro >= 100
+    ){
+
+        emoji.textContent =
+            "🐊🛁💧";
+
+
+        title.textContent =
+            "¡Coco PUDO BAÑARSE!";
+
+
+        message.textContent =
+            "Tomaste buenas decisiones y conseguiste ahorrar una cantidad importante de agua.";
+
+
+        motivation.textContent =
+            "💪 La próxima partida intenta superar tus " +
+            puntos +
+            " puntos y ahorrar todavía más.";
+
+    }
+
+    else{
+
+        emoji.textContent =
+            "🐊💧";
+
+
+        title.textContent =
+            "¡BUEN INTENTO!";
+
+
+        message.textContent =
+            "Cada decisión cuenta. Ya sabes dónde puedes mejorar tus hábitos.";
+
+
+        motivation.textContent =
+            "🔄 Juega otra vez: las situaciones y las respuestas cambiarán de posición.";
+
+    }
+
+
+    cambiarPantalla(end);
+
+}
+
+
+/* =========================================================
+   INICIO
+========================================================= */
+
+actualizarMejorPuntuacion();
+
+</script>
+
+</body>
+</html>

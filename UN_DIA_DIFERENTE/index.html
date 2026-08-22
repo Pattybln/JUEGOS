@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Un Día Diferente - Escuela</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#182235;font-family:Arial,sans-serif}
+canvas{display:block;width:100vw;height:100vh}
+#help{position:fixed;left:16px;bottom:14px;background:#182235ee;color:white;padding:10px 14px;border-radius:10px;font-size:14px}
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0"></canvas>
+<div id="help">WASD / Flechas: moverte · SHIFT: correr · E: interactuar · ENTER: continuar · R: reiniciar</div>
+<script>
+const c=document.getElementById("game"),ctx=c.getContext("2d");let W,H;
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight;if(!player)reset()}addEventListener("resize",resize);
+const keys={};addEventListener("keydown",e=>{let k=e.key.toLowerCase();keys[k]=true;if(k==="r")reset();if(k==="e"&&!e.repeat){e.preventDefault();interact()}if((k==="enter"||k===" ")&&!e.repeat){e.preventDefault();advance()}});addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+
+const chapters=[
+{name:"Llegada a la escuela",scene:"courtyard",goal:"Mateo",intro:["Alex acaba de llegar a una escuela nueva.","Antes de entrar a clases decide conocer el lugar y buscar a alguien de su curso.","Explora el patio, recoge los 3 objetos y después habla con Mateo."],items:[
+{x:.16,y:.72,name:"Cuaderno",kind:"obj"},{x:.45,y:.25,name:"Credencial",kind:"obj"},{x:.72,y:.72,name:"Mapa",kind:"obj"}],
+npcs:[{x:.82,y:.25,name:"Mateo",color:"#4b78c2",lines:["Mateo: ¡Hola! Tú eres Alex, ¿verdad?","Mateo: Ya que eres nuevo, te enseño dónde están las aulas.","Mateo: También hay un problema en el grupo del curso que quizá debas conocer."]}]},
+{name:"El rumor",scene:"hall",goal:"Sofía",intro:["En el pasillo, Alex ve a estudiantes mirando sus teléfonos.","Un mensaje ofensivo sobre Sofía se está compartiendo.","Para entender qué pasó, encuentra las 3 pistas y luego busca a Sofía."],items:[
+{x:.18,y:.28,name:"Captura",kind:"clue"},{x:.50,y:.72,name:"Notificación",kind:"clue"},{x:.82,y:.28,name:"Mensaje",kind:"clue"}],
+npcs:[{x:.82,y:.72,name:"Sofía",color:"#b56ad1",lines:["Sofía: Todos vieron lo que publicaron sobre mí.","Sofía: Después dicen que era solo una broma, pero ahora no quiero ni salir al patio.","Alex entiende que lo que ocurre en el teléfono también afecta lo que pasa en la escuela."]},
+{x:.52,y:.25,name:"Leo",color:"#df805f",lines:["Leo: Yo lo compartí porque todos lo estaban haciendo.","Leo: Ahora creo que se salió de control."]}]},
+{name:"Hacer algo",scene:"library",goal:"Leo",intro:["Alex decide que no quiere quedarse mirando.","Primero debe llevar las 3 pistas a la orientadora y después acompañar a Sofía a un lugar tranquilo.","Cuando termine las dos acciones podrá hablar con Leo."],
+stations:[{x:.18,y:.25,name:"Orientadora",color:"#8b6bb1"},{x:.78,y:.72,name:"Biblioteca",color:"#6e9270"}],
+npcs:[{x:.52,y:.25,name:"Leo",color:"#df805f",lines:["Leo: Ya entendí que compartir algo puede hacer mucho daño.","Leo: Voy a dejar de compartirlo y a pedir que los demás hagan lo mismo.","Alex no solucionó todo, pero dejó de ser un espectador."]}]},
+{name:"Un día diferente",scene:"classroom",goal:"Sofía",intro:["La jornada está por terminar.","Alex vuelve al aula. Después de todo lo que ocurrió, quiere despedirse de Sofía.","Acércate a ella para terminar la historia."],
+npcs:[{x:.78,y:.62,name:"Sofía",color:"#b56ad1",lines:["Sofía: Hoy fue diferente.","Alex: Creo que la diferencia estuvo en no quedarme mirando.","Sofía: A veces una persona que decide actuar hace que otra no se sienta sola.","FIN — Alex aprendió que no necesita encajar a cualquier precio."]}]}
+];
+
+let chapter,player,dialog,di,items,inventory,clues,trust,toast,finished,stationDone={counselor:false,library:false};
+
+
+/* ---------- MÚSICA DE MISTERIO ---------- */
+let audioCtx=null,master=null,melodyTimer=null;
+function startMysteryMusic(){
+ if(audioCtx)return;
+ audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ master=audioCtx.createGain();master.gain.value=.045;master.connect(audioCtx.destination);
+ const notes=[146.83,174.61,130.81,164.81,146.83,196.00,130.81,174.61];
+ let i=0;
+ function note(){
+   if(!audioCtx)return;
+   const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+   osc.type="triangle";osc.frequency.value=notes[i++%notes.length];
+   gain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+   gain.gain.exponentialRampToValueAtTime(.32,audioCtx.currentTime+.08);
+   gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+1.25);
+   osc.connect(gain);gain.connect(master);osc.start();osc.stop(audioCtx.currentTime+1.3);
+   melodyTimer=setTimeout(note,1450);
+ }
+ note();
+}
+function mysteryClick(){
+ if(!audioCtx)startMysteryMusic();
+}
+addEventListener("keydown",()=>mysteryClick(),{once:true});
+
+function reset(){chapter=0;dialog=null;di=0;inventory=[];clues=0;trust=0;toast="";finished=false;stationDone={counselor:false,library:false};load()}
+function load(){let L=chapters[chapter];player={x:100,y:H-130,r:19,speed:225};items=(L.items||[]).map(i=>({...i,collected:false}));}
+function advance(){if(!dialog)return;di++;if(di>=dialog.length){dialog=null;di=0;if(chapter<chapters.length-1){chapter++;load();show("Capítulo: "+chapters[chapter].name)}else finished=true}}
+function show(t){toast=t;setTimeout(()=>{if(toast===t)toast=""},1700)}
+function wp(o){return{x:o.x*W,y:o.y*H}}
+function near(o,d=75){let p=wp(o);return Math.hypot(player.x-p.x,player.y-p.y)<d}
+function interact(){
+ if(dialog||finished)return;
+ let L=chapters[chapter];
+ if(L.stations){
+  for(let s of L.stations)if(near(s)){
+   if(s.name==="Orientadora"){
+    if(stationDone.counselor){show("Ya entregaste las pistas.");return}
+    if(clues<3){show("Primero necesitas encontrar las 3 pistas.");return}
+    stationDone.counselor=true;inventory.push("Pistas entregadas");trust++;dialog=["Orientadora: Gracias por traer las pistas.","Orientadora: Las revisaremos y registraremos. No tienes que enfrentar esto solo."];di=0;return
+   }
+   if(s.name==="Biblioteca"){
+    if(stationDone.library){show("Ya acompañaste a Sofía.");return}
+    if(!stationDone.counselor){show("Primero entrega las pistas a la orientadora.");return}
+    stationDone.library=true;inventory.push("Ayuda a Sofía");trust++;dialog=["Sofía: Gracias por acompañarme.","Sofía: Aquí puedo estar tranquila un momento."];di=0;return
+   }
+  }
+ }
+ for(let n of L.npcs||[])if(near(n)){
+  if(n.name===L.goal){
+   if(chapter===0&&items.some(i=>!i.collected)){show("Busca los 3 objetos marcados con ★.");return}
+   if(chapter===1&&clues<3){show("Busca las 3 pistas marcadas con ★.");return}
+   if(chapter===2&&(!stationDone.counselor||!stationDone.library)){show("Completa las 2 acciones de ayuda.");return}
+  }
+  dialog=[...n.lines];di=0;return
+ }
+ show("Acércate a una persona, objeto o lugar con el icono ★ y presiona E.")
+}
+function collect(){
+ for(let i of items){if(i.collected)continue;let p=wp(i);if(Math.hypot(player.x-p.x,player.y-p.y)<38){i.collected=true;inventory.push(i.name);if(i.kind==="clue")clues++;trust++;show("Encontraste: "+i.name)}}
+}
+function update(dt){
+ if(dialog||finished)return;
+ let x=0,y=0;if(keys.w||keys.arrowup)y--;if(keys.s||keys.arrowdown)y++;if(keys.a||keys.arrowleft)x--;if(keys.d||keys.arrowright)x++;
+ if(x||y){let m=Math.hypot(x,y),run=keys.shift?1.65:1;x/=m;y/=m;player.x+=x*player.speed*run*dt;player.y+=y*player.speed*run*dt}
+ player.x=Math.max(40,Math.min(W-40,player.x));player.y=Math.max(105,Math.min(H-60,player.y));collect()
+}
+
+/* ---------- SCHOOL ENVIRONMENTS ---------- */
+function wall(x,y,w,h,fill="#d8d1c3"){ctx.fillStyle=fill;ctx.fillRect(x,y,w,h);ctx.strokeStyle="#a59e91";ctx.strokeRect(x,y,w,h)}
+function windowBox(x,y,w,h){ctx.fillStyle="#a9d4ec";ctx.fillRect(x,y,w,h);ctx.strokeStyle="#526476";ctx.lineWidth=5;ctx.strokeRect(x,y,w,h);ctx.fillStyle="#eaf7ff";ctx.fillRect(x+w*.45,y,5,h);ctx.fillRect(x,y+h*.46,w,5)}
+function door(x,y,w,h,label){ctx.fillStyle="#765b48";ctx.fillRect(x,y,w,h);ctx.fillStyle="#d8b47d";ctx.beginPath();ctx.arc(x+w-15,y+h/2,5,0,7);ctx.fill();ctx.fillStyle="#243044";ctx.font="bold 13px Arial";ctx.textAlign="center";ctx.fillText(label,x+w/2,y-8)}
+function drawScene(type){
+ ctx.clearRect(0,0,W,H);
+
+ // ---------- CAPÍTULO 1: LLEGADA ----------
+ if(type==="courtyard"){
+  // Morning school entrance: welcoming but unfamiliar.
+  ctx.fillStyle="#8fb9d5";ctx.fillRect(0,0,W,H);
+  // sky
+  ctx.fillStyle="#d9efff";ctx.fillRect(0,0,W,170);
+  ctx.fillStyle="#f7d878";ctx.beginPath();ctx.arc(W-100,75,38,0,Math.PI*2);ctx.fill();
+  // school building
+  ctx.fillStyle="#e8e0d2";ctx.fillRect(40,125,W-80,180);
+  ctx.fillStyle="#9b5547";ctx.fillRect(30,112,W-60,24);
+  // sign
+  ctx.fillStyle="#26364d";ctx.fillRect(W/2-170,145,340,48);
+  ctx.fillStyle="#fff";ctx.font="bold 20px Arial";ctx.textAlign="center";ctx.fillText("UNIDAD EDUCATIVA",W/2,177);
+  // windows
+  for(let x=75;x<W-110;x+=145){
+   ctx.fillStyle="#6fa5c5";ctx.fillRect(x,205,82,63);
+   ctx.strokeStyle="#394e61";ctx.lineWidth=5;ctx.strokeRect(x,205,82,63);
+   ctx.fillStyle="#d9f1ff";ctx.fillRect(x+38,205,5,63);ctx.fillRect(x,234,82,5);
+  }
+  // entrance
+  ctx.fillStyle="#694c3c";ctx.fillRect(W/2-45,200,90,105);
+  ctx.fillStyle="#e0b76e";ctx.beginPath();ctx.arc(W/2+28,252,5,0,7);ctx.fill();
+  // school yard
+  ctx.fillStyle="#78a65d";ctx.fillRect(0,305,W,H-305);
+  ctx.fillStyle="#c99d70";ctx.fillRect(70,350,W-140,150);
+  ctx.strokeStyle="#f4e2bd";ctx.lineWidth=4;ctx.strokeRect(70,350,W-140,150);
+  // basketball court
+  ctx.beginPath();ctx.arc(W/2,425,55,0,Math.PI*2);ctx.stroke();
+  // trees
+  for(let x=45;x<W;x+=210){
+   ctx.fillStyle="#72543d";ctx.fillRect(x,300,15,75);
+   ctx.fillStyle="#477b4d";ctx.beginPath();ctx.arc(x+8,286,42,0,Math.PI*2);ctx.fill();
+  }
+  // story sign
+  ctx.fillStyle="#fff";ctx.font="bold 17px Arial";ctx.fillText("PRIMER DÍA • CONOCER • ENCONTRAR TU LUGAR",W/2,540);
+ }
+
+ // ---------- CAPÍTULO 2: EL RUMOR ----------
+ else if(type==="hall"){
+  // Corridor with phones, lockers and suspicious message boards.
+  ctx.fillStyle="#d7d2c7";ctx.fillRect(0,0,W,H);
+  // ceiling
+  ctx.fillStyle="#b9b4aa";ctx.fillRect(0,0,W,92);
+  for(let x=80;x<W;x+=180){ctx.fillStyle="#f3f0e9";ctx.fillRect(x,18,75,18);}
+  // windows
+  for(let x=35;x<W-90;x+=180){
+   ctx.fillStyle="#8fc2df";ctx.fillRect(x,110,105,78);
+   ctx.strokeStyle="#4e6273";ctx.lineWidth=5;ctx.strokeRect(x,110,105,78);
+  }
+  // classroom doors
+  for(let x=20;x<W-80;x+=155){
+   ctx.fillStyle="#795642";ctx.fillRect(x,215,82,135);
+   ctx.fillStyle="#d8b56e";ctx.beginPath();ctx.arc(x+67,282,5,0,7);ctx.fill();
+   ctx.fillStyle="#26364d";ctx.font="bold 12px Arial";ctx.textAlign="center";ctx.fillText("AULA",x+41,207);
+  }
+  // lockers
+  for(let x=45;x<W-65;x+=78){
+   ctx.fillStyle="#65758a";ctx.fillRect(x,390,58,120);
+   ctx.strokeStyle="#4b596b";ctx.strokeRect(x,390,58,120);
+   for(let y=410;y<495;y+=27){ctx.fillStyle="#b8c2cd";ctx.fillRect(x+7,y,44,3)}
+  }
+  // central phone/message wall
+  ctx.fillStyle="#303c51";ctx.fillRect(W/2-145,525,290,85);
+  ctx.fillStyle="#f4c542";ctx.font="bold 15px Arial";ctx.fillText("GRUPO DEL CURSO",W/2,550);
+  ctx.fillStyle="#fff";ctx.font="13px Arial";ctx.fillText("MENSAJES • COMPARTIR • CAPTURAS",W/2,575);
+  ctx.fillStyle="#ff8a68";ctx.fillText("⚠ rumor circulando",W/2,598);
+  ctx.fillStyle="#26364d";ctx.font="bold 18px Arial";ctx.fillText("EL PASILLO",W/2,75);
+ }
+
+ // ---------- CAPÍTULO 3: HACER ALGO ----------
+ else if(type==="library"){
+  // This is now a school support/library area: evidence board + safe space.
+  ctx.fillStyle="#cdbfae";ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="#7b614d";ctx.fillRect(0,0,W,85);
+  ctx.fillStyle="#fff1d0";ctx.font="bold 24px Arial";ctx.textAlign="center";ctx.fillText("BIBLIOTECA Y ESPACIO DE APOYO",W/2,52);
+
+  // evidence board: links mechanics to story
+  ctx.fillStyle="#9a7958";ctx.fillRect(W/2-230,105,460,165);
+  ctx.fillStyle="#ead6ad";ctx.fillRect(W/2-210,120,420,135);
+  ctx.fillStyle="#27364d";ctx.font="bold 16px Arial";ctx.fillText("PISTAS DEL CASO",W/2-95,145);
+  const notes=[
+   ["CAPTURA","#f2b36b"],["NOTIFICACIÓN","#91bdd7"],["MENSAJE","#d78383"]
+  ];
+  notes.forEach((n,i)=>{
+    ctx.fillStyle=n[1];ctx.fillRect(W/2-175+i*125,170,100,58);
+    ctx.fillStyle="#27364d";ctx.font="bold 12px Arial";ctx.fillText(n[0],W/2-125+i*125,203);
+  });
+  ctx.fillStyle="#fff";ctx.font="13px Arial";ctx.fillText("Reunir las 3 pistas permite pedir ayuda.",W/2,238);
+
+  // shelves
+  for(let x=35;x<W/2-260;x+=115){
+   ctx.fillStyle="#674b39";ctx.fillRect(x,300,85,235);
+   for(let y=320;y<510;y+=38){
+    ctx.fillStyle=["#b65f5f","#6d8db0","#d0a44d","#6e9670"][Math.floor(y/38)%4];
+    ctx.fillRect(x+8,y,68,25);
+   }
+  }
+  for(let x=W/2+260;x<W-100;x+=115){
+   ctx.fillStyle="#674b39";ctx.fillRect(x,300,85,235);
+   for(let y=320;y<510;y+=38){
+    ctx.fillStyle=["#b65f5f","#6d8db0","#d0a44d","#6e9670"][Math.floor(y/38)%4];
+    ctx.fillRect(x+8,y,68,25);
+   }
+  }
+  // support table
+  ctx.fillStyle="#9b7655";ctx.fillRect(W/2-145,355,290,28);
+  ctx.fillStyle="#76543c";ctx.fillRect(W/2-120,383,12,105);ctx.fillRect(W/2+108,383,12,105);
+  ctx.fillStyle="#27364d";ctx.font="bold 15px Arial";ctx.fillText("ORIENTACIÓN • ESCUCHA • ACOMPAÑAMIENTO",W/2,530);
+ }
+
+ // ---------- CAPÍTULO 4: CAMBIO ----------
+ else {
+  // Classroom at end of day: warmer, calmer, visibly different from chapter 2.
+  ctx.fillStyle="#e9dfca";ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="#c8b99d";ctx.fillRect(0,0,W,75);
+  // sunset windows
+  for(let x=50;x<W-100;x+=210){
+   ctx.fillStyle="#e9a36f";ctx.fillRect(x,100,125,105);
+   ctx.fillStyle="#f7d79c";ctx.fillRect(x+10,110,105,85);
+   ctx.strokeStyle="#596273";ctx.lineWidth=5;ctx.strokeRect(x,100,125,105);
+   ctx.fillStyle="#df8d60";ctx.fillRect(x+60,100,5,105);ctx.fillRect(x,150,125,5);
+  }
+  // board
+  ctx.fillStyle="#273c4b";ctx.fillRect(W/2-260,100,520,115);
+  ctx.fillStyle="#f2f0d7";ctx.font="bold 23px Arial";ctx.textAlign="center";ctx.fillText("HOY APRENDIMOS",W/2,140);
+  ctx.font="16px Arial";ctx.fillText("Escuchar • Pensar • Actuar",W/2,174);
+  // desks
+  for(let row=0;row<2;row++)for(let col=0;col<4;col++){
+   let x=105+col*190,y=310+row*145;
+   ctx.fillStyle="#9b704d";ctx.fillRect(x,y,120,62);
+   ctx.fillStyle="#72513a";ctx.fillRect(x+15,y+62,10,55);ctx.fillRect(x+95,y+62,10,55);
+  }
+  // positive wall
+  ctx.fillStyle="#f5edcf";ctx.fillRect(W-260,350,185,145);
+  ctx.fillStyle="#477b63";ctx.font="bold 16px Arial";ctx.fillText("ESPACIO SEGURO",W-167,385);
+  ctx.fillStyle="#27364d";ctx.font="14px Arial";ctx.fillText("No mirar hacia otro lado.",W-167,420);
+  ctx.fillText("Pedir ayuda también es actuar.",W-167,448);
+  ctx.fillStyle="#27364d";ctx.font="bold 18px Arial";ctx.fillText("ÚLTIMA HORA • FIN DE CLASES",W/2,575);
+ }
+}
+function character(n,target=false){
+ const p=wp(n),x=p.x,y=p.y;
+ // shadow
+ ctx.fillStyle="#0003";ctx.beginPath();ctx.ellipse(x,y+34,29,9,0,0,Math.PI*2);ctx.fill();
+
+ // body / clothing
+ ctx.fillStyle=n.color;ctx.beginPath();ctx.roundRect(x-20,y-2,40,45,9);ctx.fill();
+
+ // backpack for Alex
+ if(n.name==="Alex"){
+   ctx.fillStyle="#263d63";ctx.beginPath();ctx.roundRect(x-25,y+1,12,34,5);ctx.fill();
+ }
+
+ // neck
+ ctx.fillStyle="#d99b72";ctx.fillRect(x-6,y-7,12,10);
+
+ // head
+ ctx.fillStyle="#f0b98d";ctx.beginPath();ctx.arc(x,y-24,18,0,Math.PI*2);ctx.fill();
+
+ // hair styles
+ ctx.fillStyle=n.name==="Sofía"?"#4b2d32":n.name==="Mateo"?"#2e2420":n.name==="Leo"?"#35261d":"#1f2630";
+ ctx.beginPath();
+ if(n.name==="Sofía"){
+   ctx.arc(x,y-28,19,Math.PI,Math.PI*2);
+   ctx.fill();ctx.fillRect(x-18,y-28,7,29);ctx.fillRect(x+11,y-28,7,29);
+ }else{
+   ctx.arc(x,y-30,18,Math.PI,Math.PI*2);
+   ctx.fill();
+   ctx.fillRect(x-17,y-30,34,8);
+ }
+
+ // eyes
+ ctx.fillStyle="#273044";
+ ctx.beginPath();ctx.arc(x-6,y-23,2.2,0,7);ctx.arc(x+6,y-23,2.2,0,7);ctx.fill();
+
+ // expression
+ ctx.strokeStyle="#6f3e3e";ctx.lineWidth=2;ctx.beginPath();
+ if(n.name==="Sofía"){ctx.arc(x,y-15,7,.15,Math.PI-.15)}
+ else if(n.name==="Alex"){ctx.arc(x,y-15,7,.1,Math.PI-.1)}
+ else {ctx.moveTo(x-5,y-13);ctx.quadraticCurveTo(x,y-10,x+5,y-13)}
+ ctx.stroke();
+
+ // clothes details
+ if(n.name==="Mateo"){ctx.fillStyle="#f0d15e";ctx.fillRect(x-4,y+2,8,8)}
+ if(n.name==="Leo"){ctx.fillStyle="#e7e7e7";ctx.fillRect(x-4,y+4,8,15)}
+ if(n.name==="Sofía"){ctx.fillStyle="#d6a3e5";ctx.fillRect(x-20,y+20,40,6)}
+ if(n.name==="Alex"){ctx.fillStyle="#f0f0f0";ctx.fillRect(x-5,y+5,10,8)}
+
+ // legs/shoes
+ ctx.fillStyle="#263044";ctx.fillRect(x-14,y+43,10,18);ctx.fillRect(x+4,y+43,10,18);
+ ctx.fillStyle="#f4f4f4";ctx.fillRect(x-16,y+58,13,5);ctx.fillRect(x+3,y+58,13,5);
+
+ // name
+ ctx.fillStyle="#fff";ctx.font="bold 14px Arial";ctx.textAlign="center";ctx.fillText(n.name,x,y-53);
+
+ // target marker
+ if(target&&!dialog){
+   ctx.strokeStyle="#f4c542";ctx.lineWidth=3;ctx.strokeRect(x-34,y-68,68,74);
+   ctx.fillStyle="#f4c542";ctx.beginPath();ctx.moveTo(x,y-88);ctx.lineTo(x-9,y-75);ctx.lineTo(x+9,y-75);ctx.closePath();ctx.fill();
+ }
+}
+function item(i){if(i.collected)return;let p=wp(i);ctx.fillStyle=i.kind==="clue"?"#ff964d":"#f4c542";ctx.beginPath();ctx.arc(p.x,p.y,18,0,7);ctx.fill();ctx.fillStyle="#222";ctx.font="bold 18px Arial";ctx.textAlign="center";ctx.fillText("★",p.x,p.y+6);ctx.font="bold 12px Arial";ctx.fillText(i.name,p.x,p.y+35)}
+function station(s){let p=wp(s);ctx.fillStyle=s.color;ctx.fillRect(p.x-28,p.y-28,56,56);ctx.fillStyle="#fff";ctx.font="bold 19px Arial";ctx.textAlign="center";ctx.fillText("E",p.x,p.y+7);ctx.fillStyle="#253046";ctx.font="bold 13px Arial";ctx.fillText(s.name,p.x,p.y+48)}
+function draw(){
+ const L=chapters[chapter];drawScene(L.scene);items.forEach(item);(L.stations||[]).forEach(station);
+ const target=(L.npcs||[]).find(n=>n.name===L.goal);(L.npcs||[]).forEach(n=>character(n,n===target));
+ character({x:player.x/W,y:player.y/H,name:"Alex",color:"#3559a8"});
+ // HUD
+ ctx.fillStyle="#182235ed";ctx.fillRect(16,16,590,112);ctx.fillStyle="#fff";ctx.textAlign="left";ctx.font="bold 22px Arial";ctx.fillText("UN DÍA DIFERENTE",32,45);ctx.font="14px Arial";ctx.fillText("Capítulo: "+L.name,32,70);
+ let obj=chapter===2?"Completa las 2 acciones de ayuda":L.goal;ctx.fillText("Objetivo: "+obj,32,92);ctx.fillText("Pistas: "+clues+"/3    Confianza: "+trust+"    Mochila: "+inventory.length,32,114);
+ if(target&&!dialog){let p=wp(target);ctx.fillStyle="#f4c542";ctx.beginPath();ctx.arc(p.x,p.y-68,16,0,7);ctx.fill();ctx.fillStyle="#222";ctx.font="bold 11px Arial";ctx.textAlign="center";ctx.fillText("OBJETIVO",p.x,p.y-64)}
+ if(toast){ctx.fillStyle="#fff";ctx.fillRect(W/2-200,H-70,400,40);ctx.fillStyle="#182235";ctx.font="bold 14px Arial";ctx.textAlign="center";ctx.fillText(toast,W/2,H-45)}
+ if(dialog){ctx.fillStyle="#09101cf5";ctx.fillRect(35,H-205,W-70,160);ctx.strokeStyle="#f4c542";ctx.lineWidth=3;ctx.strokeRect(35,H-205,W-70,160);ctx.fillStyle="#fff";ctx.font="19px Arial";ctx.textAlign="left";ctx.fillText(dialog[di],60,H-135);ctx.font="bold 14px Arial";ctx.textAlign="right";ctx.fillText("ENTER / ESPACIO → continuar",W-60,H-82)}
+ if(finished){ctx.fillStyle="#09101cf7";ctx.fillRect(W/2-350,H/2-145,700,290);ctx.fillStyle="#f4c542";ctx.font="bold 35px Arial";ctx.textAlign="center";ctx.fillText("UN DÍA DIFERENTE",W/2,H/2-78);ctx.fillStyle="#fff";ctx.font="18px Arial";ctx.fillText("Exploraste la escuela, encontraste pistas",W/2,H/2-30);ctx.fillText("y ayudaste a que Alex dejara de ser un espectador.",W/2,H/2+5);ctx.font="bold 16px Arial";ctx.fillText("Confianza: "+trust+"   Objetos/pistas: "+inventory.length,W/2,H/2+48);ctx.fillText("Presiona R para jugar otra vez",W/2,H/2+92)}
+}
+let last=performance.now();function loop(t){let dt=Math.min(.033,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}resize();reset();requestAnimationFrame(loop);
+</script></body></html>

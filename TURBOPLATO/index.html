@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TurboPlato - Misión Saludable</title>
+
+<style>
+
+/* =========================================
+   CONFIGURACIÓN GENERAL
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    overflow:hidden;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#2b170e;
+    color:white;
+}
+
+#gameCanvas{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    cursor:crosshair;
+    touch-action:none;
+}
+
+
+/* =========================================
+   MENÚ PRINCIPAL
+========================================= */
+
+#menu{
+    position:fixed;
+    inset:0;
+    z-index:20;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+        linear-gradient(
+            rgba(35,18,8,.35),
+            rgba(35,18,8,.7)
+        ),
+        radial-gradient(
+            circle at center,
+            #9b6b43,
+            #2b170e 75%
+        );
+}
+
+.menu-box{
+    width:560px;
+    max-width:92%;
+
+    padding:42px;
+
+    text-align:center;
+
+    background:#321c10;
+
+    border:4px solid #f6c453;
+
+    border-radius:30px;
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,.5),
+        inset 0 0 30px rgba(255,255,255,.04);
+}
+
+.title{
+    font-size:55px;
+    font-weight:900;
+    letter-spacing:2px;
+
+    color:#ffd45c;
+
+    text-shadow:
+        3px 3px 0 #7a3d12,
+        0 0 20px rgba(255,210,70,.4);
+}
+
+.subtitle{
+    margin-top:6px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.food-icons{
+    margin-top:18px;
+
+    font-size:42px;
+
+    letter-spacing:7px;
+}
+
+.description{
+    margin-top:20px;
+
+    line-height:1.6;
+
+    color:#f5e8d8;
+
+    font-size:16px;
+}
+
+.start-button{
+    margin-top:28px;
+
+    padding:17px 55px;
+
+    border:none;
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe27a,
+            #f59e0b
+        );
+
+    color:#351708;
+
+    font-size:21px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 6px 0 #a85d08;
+
+    transition:.2s;
+}
+
+.start-button:hover{
+    transform:translateY(-3px) scale(1.05);
+
+    box-shadow:
+        0 9px 0 #a85d08;
+}
+
+
+/* =========================================
+   HUD
+========================================= */
+
+#hud{
+    position:fixed;
+
+    top:18px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    width:92%;
+    max-width:1150px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    pointer-events:none;
+}
+
+.hud-box{
+    min-width:150px;
+
+    padding:11px 20px;
+
+    text-align:center;
+
+    background:#2d1a10;
+
+    border:3px solid #805d3e;
+
+    border-radius:15px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.45);
+}
+
+.hud-label{
+    font-size:12px;
+
+    color:#d9c5af;
+
+    text-transform:uppercase;
+}
+
+.hud-value{
+    margin-top:3px;
+
+    font-size:27px;
+
+    font-weight:bold;
+}
+
+#score{
+    color:#67e8a5;
+}
+
+#timer{
+    color:#ffe066;
+}
+
+#lives{
+    color:#ff7186;
+}
+
+
+/* =========================================
+   MENSAJE
+========================================= */
+
+#message{
+    position:fixed;
+
+    z-index:15;
+
+    top:120px;
+    left:50%;
+
+    transform:
+        translateX(-50%)
+        scale(.7);
+
+    font-size:31px;
+
+    font-weight:900;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    text-shadow:
+        0 3px 8px #000;
+
+    transition:.2s;
+}
+
+#message.show{
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        scale(1.1);
+}
+
+
+/* =========================================
+   COMBO
+========================================= */
+
+#combo{
+    position:fixed;
+
+    z-index:10;
+
+    top:168px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    font-size:23px;
+
+    font-weight:bold;
+
+    color:#ffe066;
+
+    text-shadow:
+        0 3px 7px #000;
+
+    pointer-events:none;
+}
+
+
+/* =========================================
+   INSTRUCCIONES
+========================================= */
+
+#instructions{
+    position:fixed;
+
+    bottom:18px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    padding:10px 23px;
+
+    background:#2d1a10;
+
+    border:2px solid #806043;
+
+    border-radius:25px;
+
+    color:#f5e8d8;
+
+    font-size:14px;
+
+    pointer-events:none;
+}
+
+
+/* =========================================
+   GAME OVER
+========================================= */
+
+#gameOver{
+    position:fixed;
+
+    inset:0;
+
+    z-index:30;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(20,10,5,.9);
+}
+
+.game-over-box{
+    width:500px;
+
+    max-width:92%;
+
+    padding:42px;
+
+    text-align:center;
+
+    background:#321c10;
+
+    border:4px solid #f6c453;
+
+    border-radius:28px;
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,.5);
+}
+
+.game-over-title{
+    font-size:42px;
+
+    color:#ffd45c;
+}
+
+.final-score{
+    margin-top:20px;
+
+    font-size:31px;
+}
+
+.final-message{
+    margin-top:15px;
+
+    color:#eadbca;
+
+    line-height:1.5;
+}
+
+.restart-button{
+    margin-top:25px;
+
+    padding:14px 40px;
+
+    border:none;
+
+    border-radius:13px;
+
+    background:#ffd45c;
+
+    color:#351708;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.restart-button:hover{
+    transform:scale(1.06);
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     MENÚ
+========================================= -->
+
+<div id="menu">
+
+    <div class="menu-box">
+
+        <div class="title">
+            TURBOPLATO
+        </div>
+
+        <div class="subtitle">
+            🍎 Misión Saludable 🥕
+        </div>
+
+        <div class="food-icons">
+            🍎 🍊 🍉 🥕 🍓 🍔 🍟 🍕
+        </div>
+
+        <p class="description">
+
+            ¡Prepárate para una misión deliciosa!
+
+            <br><br>
+
+            🔪 Corta los alimentos saludables
+            mientras vuelan por la cocina.
+
+            <br>
+
+            ⚠️ ¡Pero cuidado con la comida chatarra!
+
+            <br><br>
+
+            🟢 Alimento saludable = +10 puntos
+
+            <br>
+
+            🔴 Comida chatarra = -15 puntos
+            y pierdes una vida.
+
+        </p>
+
+        <button
+            class="start-button"
+            onclick="startGame()">
+
+            🔪 COMENZAR
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     HUD
+========================================= -->
+
+<div id="hud">
+
+    <div class="hud-box">
+
+        <div class="hud-label">
+            Puntos
+        </div>
+
+        <div
+            class="hud-value"
+            id="score">
+
+            0
+
+        </div>
+
+    </div>
+
+
+    <div class="hud-box">
+
+        <div class="hud-label">
+            Tiempo
+        </div>
+
+        <div
+            class="hud-value"
+            id="timer">
+
+            60
+
+        </div>
+
+    </div>
+
+
+    <div class="hud-box">
+
+        <div class="hud-label">
+            Vidas
+        </div>
+
+        <div
+            class="hud-value"
+            id="lives">
+
+            ❤️❤️❤️
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     MENSAJE
+========================================= -->
+
+<div id="message"></div>
+
+<div id="combo"></div>
+
+
+<!-- =========================================
+     INSTRUCCIONES
+========================================= -->
+
+<div id="instructions">
+
+    🔪 Mueve el mouse y arrastra para cortar los alimentos
+
+</div>
+
+
+<!-- =========================================
+     CANVAS
+========================================= -->
+
+<canvas id="gameCanvas"></canvas>
+
+
+<!-- =========================================
+     GAME OVER
+========================================= -->
+
+<div id="gameOver">
+
+    <div class="game-over-box">
+
+        <div
+            class="game-over-title"
+            id="gameOverTitle">
+
+            MISIÓN TERMINADA
+
+        </div>
+
+        <div class="final-score">
+
+            Puntuación:
+
+            <strong id="finalScore">
+                0
+            </strong>
+
+        </div>
+
+        <p
+            class="final-message"
+            id="finalMessage">
+        </p>
+
+        <button
+            class="restart-button"
+            onclick="startGame()">
+
+            🔄 JUGAR DE NUEVO
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   CANVAS
+========================================= */
+
+const canvas =
+    document.getElementById(
+        "gameCanvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+
+function resizeCanvas(){
+
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        window.innerHeight;
+
+}
+
+resizeCanvas();
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let gameRunning = false;
+
+let score = 0;
+
+let lives = 3;
+
+let timeLeft = 60;
+
+let objects = [];
+
+let particles = [];
+
+let slashTrail = [];
+
+let lastSpawn = 0;
+
+let spawnInterval = 700;
+
+let timerInterval;
+
+let combo = 0;
+
+let comboTimer = 0;
+
+
+/* =========================================
+   MOUSE
+========================================= */
+
+let mouse = {
+
+    x:0,
+
+    y:0,
+
+    down:false
+
+};
+
+
+canvas.addEventListener(
+    "mousemove",
+    function(event){
+
+        mouse.x =
+            event.clientX;
+
+        mouse.y =
+            event.clientY;
+
+
+        if(mouse.down){
+
+            slashTrail.push({
+
+                x:mouse.x,
+
+                y:mouse.y,
+
+                life:1
+
+            });
+
+            checkSlash();
+
+        }
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mousedown",
+    function(){
+
+        mouse.down = true;
+
+        slashTrail = [];
+
+    }
+);
+
+
+canvas.addEventListener(
+    "mouseup",
+    function(){
+
+        mouse.down = false;
+
+    }
+);
+
+
+/* =========================================
+   TOUCH
+========================================= */
+
+canvas.addEventListener(
+    "touchstart",
+    function(event){
+
+        event.preventDefault();
+
+        mouse.down = true;
+
+        const touch =
+            event.touches[0];
+
+        mouse.x =
+            touch.clientX;
+
+        mouse.y =
+            touch.clientY;
+
+    }
+);
+
+
+canvas.addEventListener(
+    "touchmove",
+    function(event){
+
+        event.preventDefault();
+
+        const touch =
+            event.touches[0];
+
+        mouse.x =
+            touch.clientX;
+
+        mouse.y =
+            touch.clientY;
+
+
+        slashTrail.push({
+
+            x:mouse.x,
+
+            y:mouse.y,
+
+            life:1
+
+        });
+
+        checkSlash();
+
+    }
+);
+
+
+canvas.addEventListener(
+    "touchend",
+    function(){
+
+        mouse.down = false;
+
+    }
+);
+
+
+/* =========================================
+   ALIMENTOS
+========================================= */
+
+const foodTypes = [
+
+    /* ===== SALUDABLES ===== */
+
+    {
+        name:"Manzana",
+        type:"healthy",
+        emoji:"🍎",
+        color:"#ef4444"
+    },
+
+    {
+        name:"Naranja",
+        type:"healthy",
+        emoji:"🍊",
+        color:"#f97316"
+    },
+
+    {
+        name:"Sandía",
+        type:"healthy",
+        emoji:"🍉",
+        color:"#22c55e"
+    },
+
+    {
+        name:"Limón",
+        type:"healthy",
+        emoji:"🍋",
+        color:"#facc15"
+    },
+
+    {
+        name:"Plátano",
+        type:"healthy",
+        emoji:"🍌",
+        color:"#fde047"
+    },
+
+    {
+        name:"Fresa",
+        type:"healthy",
+        emoji:"🍓",
+        color:"#ef4444"
+    },
+
+    {
+        name:"Uvas",
+        type:"healthy",
+        emoji:"🍇",
+        color:"#8b5cf6"
+    },
+
+    {
+        name:"Piña",
+        type:"healthy",
+        emoji:"🍍",
+        color:"#eab308"
+    },
+
+    {
+        name:"Pera",
+        type:"healthy",
+        emoji:"🍐",
+        color:"#84cc16"
+    },
+
+    {
+        name:"Durazno",
+        type:"healthy",
+        emoji:"🍑",
+        color:"#fb923c"
+    },
+
+    {
+        name:"Zanahoria",
+        type:"healthy",
+        emoji:"🥕",
+        color:"#f97316"
+    },
+
+    {
+        name:"Brócoli",
+        type:"healthy",
+        emoji:"🥦",
+        color:"#22c55e"
+    },
+
+    {
+        name:"Tomate",
+        type:"healthy",
+        emoji:"🍅",
+        color:"#dc2626"
+    },
+
+    {
+        name:"Maíz",
+        type:"healthy",
+        emoji:"🌽",
+        color:"#facc15"
+    },
+
+    {
+        name:"Aguacate",
+        type:"healthy",
+        emoji:"🥑",
+        color:"#65a30d"
+    },
+
+    /* ===== CHATARRA ===== */
+
+    {
+        name:"Hamburguesa",
+        type:"bad",
+        emoji:"🍔",
+        color:"#92400e"
+    },
+
+    {
+        name:"Pizza",
+        type:"bad",
+        emoji:"🍕",
+        color:"#ef4444"
+    },
+
+    {
+        name:"Papas fritas",
+        type:"bad",
+        emoji:"🍟",
+        color:"#facc15"
+    },
+
+    {
+        name:"Hot Dog",
+        type:"bad",
+        emoji:"🌭",
+        color:"#dc2626"
+    },
+
+    {
+        name:"Dona",
+        type:"bad",
+        emoji:"🍩",
+        color:"#ec4899"
+    },
+
+    {
+        name:"Pastel",
+        type:"bad",
+        emoji:"🍰",
+        color:"#f472b6"
+    },
+
+    {
+        name:"Galleta",
+        type:"bad",
+        emoji:"🍪",
+        color:"#a16207"
+    },
+
+    {
+        name:"Helado",
+        type:"bad",
+        emoji:"🍦",
+        color:"#f9a8d4"
+    },
+
+    {
+        name:"Refresco",
+        type:"bad",
+        emoji:"🥤",
+        color:"#64748b"
+    },
+
+    {
+        name:"Caramelo",
+        type:"bad",
+        emoji:"🍬",
+        color:"#ec4899"
+    },
+
+    {
+        name:"Chocolate",
+        type:"bad",
+        emoji:"🍫",
+        color:"#78350f"
+    },
+
+    {
+        name:"Palomitas",
+        type:"bad",
+        emoji:"🍿",
+        color:"#facc15"
+    },
+
+    {
+        name:"Pretzel",
+        type:"bad",
+        emoji:"🥨",
+        color:"#a16207"
+    }
+
+];
+
+
+/* =========================================
+   INICIAR JUEGO
+========================================= */
+
+function startGame(){
+
+    document.getElementById(
+        "menu"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "gameOver"
+    ).style.display =
+        "none";
+
+
+    score = 0;
+
+    lives = 3;
+
+    timeLeft = 60;
+
+    combo = 0;
+
+    comboTimer = 0;
+
+    objects = [];
+
+    particles = [];
+
+    slashTrail = [];
+
+    spawnInterval = 700;
+
+    lastSpawn = 0;
+
+    gameRunning = true;
+
+
+    updateHUD();
+
+
+    document.getElementById(
+        "combo"
+    ).textContent = "";
+
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    timerInterval =
+        setInterval(
+
+            function(){
+
+                if(!gameRunning)
+                    return;
+
+
+                timeLeft--;
+
+                updateHUD();
+
+
+                if(
+                    timeLeft <= 0
+                ){
+
+                    endGame(true);
+
+                }
+
+            },
+
+            1000
+
+        );
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+
+/* =========================================
+   CREAR ALIMENTO
+========================================= */
+
+function spawnFood(){
+
+    const type =
+        foodTypes[
+            Math.floor(
+                Math.random() *
+                foodTypes.length
+            )
+        ];
+
+
+    const obj = {
+
+        x:
+            Math.random() *
+            (canvas.width - 180)
+            + 90,
+
+        y:
+            canvas.height + 80,
+
+        radius:
+            43 +
+            Math.random()*7,
+
+        velocityX:
+            (Math.random()-.5)*9,
+
+        velocityY:
+            -16 -
+            Math.random()*7,
+
+        gravity:.38,
+
+        rotation:0,
+
+        rotationSpeed:
+            (Math.random()-.5)*.15,
+
+        name:
+            type.name,
+
+        type:
+            type.type,
+
+        emoji:
+            type.emoji,
+
+        color:
+            type.color,
+
+        sliced:false
+
+    };
+
+
+    objects.push(obj);
+
+}
+
+
+/* =========================================
+   DIBUJAR ALIMENTO
+========================================= */
+
+function drawObject(obj){
+
+    ctx.save();
+
+
+    ctx.translate(
+        obj.x,
+        obj.y
+    );
+
+
+    ctx.rotate(
+        obj.rotation
+    );
+
+
+    /* ==============================
+       SOMBRA
+    ============================== */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        7,
+        9,
+        obj.radius + 6,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.55)";
+
+    ctx.fill();
+
+
+    /* ==============================
+       CÍRCULO EXTERIOR SÓLIDO
+    ============================== */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        obj.radius + 6,
+        0,
+        Math.PI * 2
+    );
+
+
+    if(
+        obj.type === "healthy"
+    ){
+
+        ctx.fillStyle =
+            "#166534";
+
+    }
+    else{
+
+        ctx.fillStyle =
+            "#991b1b";
+
+    }
+
+    ctx.fill();
+
+
+    /* ==============================
+       BORDE
+    ============================== */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        obj.radius + 6,
+        0,
+        Math.PI * 2
+    );
+
+
+    if(
+        obj.type === "healthy"
+    ){
+
+        ctx.strokeStyle =
+            "#86efac";
+
+    }
+    else{
+
+        ctx.strokeStyle =
+            "#fca5a5";
+
+    }
+
+
+    ctx.lineWidth = 5;
+
+    ctx.stroke();
+
+
+    /* ==============================
+       FONDO BLANCO SÓLIDO
+    ============================== */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        0,
+        0,
+        obj.radius - 2,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fill();
+
+
+    /* ==============================
+       EMOJI
+    ============================== */
+
+    ctx.font =
+        `${obj.radius * 1.45}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+
+    ctx.shadowColor =
+        "rgba(0,0,0,.35)";
+
+    ctx.shadowBlur = 5;
+
+
+    ctx.fillText(
+        obj.emoji,
+        0,
+        3
+    );
+
+
+    ctx.shadowBlur = 0;
+
+
+    /* ==============================
+       NOMBRE
+    ============================== */
+
+    ctx.font =
+        "bold 14px Arial";
+
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "top";
+
+
+    ctx.lineWidth = 4;
+
+    ctx.strokeStyle =
+        "#000000";
+
+
+    ctx.strokeText(
+        obj.name,
+        0,
+        obj.radius + 13
+    );
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.fillText(
+        obj.name,
+        0,
+        obj.radius + 13
+    );
+
+
+    /* ==============================
+       INDICADOR
+    ============================== */
+
+    ctx.font =
+        "bold 21px Arial";
+
+
+    ctx.textBaseline =
+        "middle";
+
+
+    if(
+        obj.type === "healthy"
+    ){
+
+        ctx.fillStyle =
+            "#15803d";
+
+        ctx.fillText(
+            "✓",
+            -obj.radius - 8,
+            -obj.radius - 8
+        );
+
+    }
+    else{
+
+        ctx.fillStyle =
+            "#dc2626";
+
+        ctx.fillText(
+            "✕",
+            -obj.radius - 8,
+            -obj.radius - 8
+        );
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =========================================
+   ACTUALIZAR OBJETOS
+========================================= */
+
+function updateObjects(){
+
+    for(
+        let i =
+            objects.length - 1;
+
+        i >= 0;
+
+        i--
+    ){
+
+        const obj =
+            objects[i];
+
+
+        obj.x +=
+            obj.velocityX;
+
+        obj.y +=
+            obj.velocityY;
+
+        obj.velocityY +=
+            obj.gravity;
+
+        obj.rotation +=
+            obj.rotationSpeed;
+
+
+        /* ==================================
+           ALIMENTO QUE SALE DE LA PANTALLA
+        ================================== */
+
+        if(
+            obj.y >
+            canvas.height + 130
+        ){
+
+            if(
+                obj.type === "healthy" &&
+                !obj.sliced
+            ){
+
+                lives--;
+
+                combo = 0;
+
+
+                showMessage(
+                    "¡SE ESCAPÓ! 😱",
+                    false
+                );
+
+
+                updateHUD();
+
+
+                if(
+                    lives <= 0
+                ){
+
+                    endGame(false);
+
+                }
+
+            }
+
+
+            objects.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   DETECTAR CORTE
+========================================= */
+
+function checkSlash(){
+
+    if(!mouse.down)
+        return;
+
+
+    for(
+        let i =
+            objects.length - 1;
+
+        i >= 0;
+
+        i--
+    ){
+
+        const obj =
+            objects[i];
+
+
+        if(obj.sliced)
+            continue;
+
+
+        const distance =
+            Math.hypot(
+                mouse.x - obj.x,
+                mouse.y - obj.y
+            );
+
+
+        if(
+            distance <
+            obj.radius + 25
+        ){
+
+            sliceObject(obj);
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   CORTAR OBJETO
+========================================= */
+
+function sliceObject(obj){
+
+    obj.sliced = true;
+
+
+    createParticles(
+        obj.x,
+        obj.y,
+        obj.color
+    );
+
+
+    /* ==============================
+       SALUDABLE
+    ============================== */
+
+    if(
+        obj.type === "healthy"
+    ){
+
+        combo++;
+
+        comboTimer = 120;
+
+
+        let points = 10;
+
+
+        if(combo >= 3){
+
+            points += 5;
+
+        }
+
+
+        if(combo >= 5){
+
+            points += 10;
+
+        }
+
+
+        score += points;
+
+
+        showMessage(
+            "+" +
+            points +
+            " 🍎",
+            true
+        );
+
+
+        if(
+            combo >= 2
+        ){
+
+            document.getElementById(
+                "combo"
+            ).textContent =
+                "🔥 COMBO x" +
+                combo;
+
+        }
+
+    }
+
+
+    /* ==============================
+       CHATARRA
+    ============================== */
+
+    else{
+
+        score -= 15;
+
+        lives--;
+
+        combo = 0;
+
+
+        document.getElementById(
+            "combo"
+        ).textContent = "";
+
+
+        showMessage(
+            "¡CUIDADO! 🍔 -15",
+            false
+        );
+
+
+        if(
+            lives <= 0
+        ){
+
+            endGame(false);
+
+        }
+
+    }
+
+
+    updateHUD();
+
+
+    const index =
+        objects.indexOf(obj);
+
+
+    if(
+        index !== -1
+    ){
+
+        objects.splice(
+            index,
+            1
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CREAR PARTÍCULAS
+========================================= */
+
+function createParticles(
+    x,
+    y,
+    color
+){
+
+    for(
+        let i=0;
+
+        i<24;
+
+        i++
+    ){
+
+        particles.push({
+
+            x:x,
+
+            y:y,
+
+            vx:
+                (Math.random()-.5)*11,
+
+            vy:
+                (Math.random()-.5)*11,
+
+            life:1,
+
+            color:color,
+
+            size:
+                3 +
+                Math.random()*5
+
+        });
+
+    }
+
+}
+
+
+/* =========================================
+   ACTUALIZAR PARTÍCULAS
+========================================= */
+
+function updateParticles(){
+
+    for(
+        let i =
+            particles.length - 1;
+
+        i >= 0;
+
+        i--
+    ){
+
+        const p =
+            particles[i];
+
+
+        p.x +=
+            p.vx;
+
+        p.y +=
+            p.vy;
+
+        p.vy +=
+            .25;
+
+        p.life -=
+            .025;
+
+
+        if(
+            p.life <= 0
+        ){
+
+            particles.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   DIBUJAR PARTÍCULAS
+========================================= */
+
+function drawParticles(){
+
+    particles.forEach(
+        function(p){
+
+            ctx.globalAlpha =
+                p.life;
+
+            ctx.fillStyle =
+                p.color;
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x,
+                p.y,
+                p.size,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+
+        }
+    );
+
+
+    ctx.globalAlpha = 1;
+
+}
+
+
+/* =========================================
+   TRAZO DE CORTE
+========================================= */
+
+function drawSlash(){
+
+    if(
+        slashTrail.length < 2
+    ){
+
+        return;
+
+    }
+
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        slashTrail[0].x,
+        slashTrail[0].y
+    );
+
+
+    for(
+        let i=1;
+
+        i<slashTrail.length;
+
+        i++
+    ){
+
+        ctx.lineTo(
+            slashTrail[i].x,
+            slashTrail[i].y
+        );
+
+    }
+
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+    ctx.lineWidth = 7;
+
+    ctx.lineCap =
+        "round";
+
+
+    ctx.shadowColor =
+        "#ffffff";
+
+    ctx.shadowBlur =
+        18;
+
+
+    ctx.stroke();
+
+
+    ctx.shadowBlur = 0;
+
+
+    slashTrail.forEach(
+        function(point){
+
+            point.life -=
+                .08;
+
+        }
+    );
+
+
+    slashTrail =
+        slashTrail.filter(
+            p =>
+                p.life > 0
+        );
+
+}
+
+
+/* =========================================
+   FONDO DE COCINA
+========================================= */
+
+function drawKitchenBackground(){
+
+    /* ==================================
+       PARED
+    ================================== */
+
+    const wall =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            canvas.height
+        );
+
+
+    wall.addColorStop(
+        0,
+        "#d9b38c"
+    );
+
+
+    wall.addColorStop(
+        .55,
+        "#b77d55"
+    );
+
+
+    wall.addColorStop(
+        1,
+        "#74432c"
+    );
+
+
+    ctx.fillStyle =
+        wall;
+
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* ==================================
+       AZULEJOS
+    ================================== */
+
+    const tileSize = 70;
+
+
+    ctx.strokeStyle =
+        "rgba(70,40,25,.25)";
+
+
+    ctx.lineWidth = 2;
+
+
+    for(
+        let x=0;
+
+        x<canvas.width;
+
+        x+=tileSize
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x,
+            0
+        );
+
+        ctx.lineTo(
+            x,
+            canvas.height
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    for(
+        let y=0;
+
+        y<canvas.height;
+
+        y+=tileSize
+    ){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y
+        );
+
+        ctx.lineTo(
+            canvas.width,
+            y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* ==================================
+       ENCIMERA
+    ================================== */
+
+    const counterY =
+        canvas.height - 120;
+
+
+    const counter =
+        ctx.createLinearGradient(
+            0,
+            counterY,
+            0,
+            canvas.height
+        );
+
+
+    counter.addColorStop(
+        0,
+        "#704630"
+    );
+
+
+    counter.addColorStop(
+        1,
+        "#28150d"
+    );
+
+
+    ctx.fillStyle =
+        counter;
+
+
+    ctx.fillRect(
+        0,
+        counterY,
+        canvas.width,
+        120
+    );
+
+
+    /* Borde */
+
+    ctx.fillStyle =
+        "#bd8658";
+
+
+    ctx.fillRect(
+        0,
+        counterY,
+        canvas.width,
+        8
+    );
+
+
+    /* ==================================
+       DECORACIÓN
+    ================================== */
+
+    drawKitchenDecor();
+
+}
+
+
+/* =========================================
+   DECORACIÓN DE COCINA
+========================================= */
+
+function drawKitchenDecor(){
+
+    /* PLATO IZQUIERDO */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        100,
+        150,
+        48,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fill();
+
+    ctx.strokeStyle =
+        "#b6b6b6";
+
+    ctx.lineWidth = 5;
+
+    ctx.stroke();
+
+
+    /* PLATO DERECHO */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        canvas.width - 100,
+        150,
+        48,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fill();
+
+    ctx.stroke();
+
+
+    /* CUCHARA IZQUIERDA */
+
+    ctx.strokeStyle =
+        "#68432d";
+
+    ctx.lineWidth = 8;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        175,
+        80
+    );
+
+    ctx.lineTo(
+        245,
+        220
+    );
+
+    ctx.stroke();
+
+
+    /* CUCHARA DERECHA */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        canvas.width - 175,
+        80
+    );
+
+    ctx.lineTo(
+        canvas.width - 245,
+        220
+    );
+
+    ctx.stroke();
+
+
+    /* OLLA */
+
+    ctx.font =
+        "48px Segoe UI Emoji";
+
+
+    ctx.textAlign =
+        "center";
+
+
+    ctx.fillText(
+        "🍳",
+        canvas.width/2,
+        125
+    );
+
+}
+
+
+/* =========================================
+   ACTUALIZAR HUD
+========================================= */
+
+function updateHUD(){
+
+    document.getElementById(
+        "score"
+    ).textContent =
+        score;
+
+
+    document.getElementById(
+        "timer"
+    ).textContent =
+        timeLeft;
+
+
+    document.getElementById(
+        "lives"
+    ).textContent =
+        "❤️".repeat(lives);
+
+}
+
+
+/* =========================================
+   MENSAJES
+========================================= */
+
+function showMessage(
+    text,
+    positive
+){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.style.color =
+        positive
+        ? "#67e8a5"
+        : "#ff7186";
+
+
+    message.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        function(){
+
+            message.classList.remove(
+                "show"
+            );
+
+        },
+        650
+    );
+
+}
+
+
+/* =========================================
+   FINAL DEL JUEGO
+========================================= */
+
+function endGame(
+    timeFinished
+){
+
+    if(
+        !gameRunning
+    ){
+
+        return;
+
+    }
+
+
+    gameRunning =
+        false;
+
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    document.getElementById(
+        "gameOver"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        score;
+
+
+    const title =
+        document.getElementById(
+            "gameOverTitle"
+        );
+
+
+    const message =
+        document.getElementById(
+            "finalMessage"
+        );
+
+
+    if(
+        score >= 100 &&
+        timeFinished
+    ){
+
+        title.textContent =
+            "🏆 ¡MISIÓN CUMPLIDA!";
+
+
+        message.textContent =
+            "¡Excelente trabajo! Reconociste los alimentos saludables y conseguiste una gran puntuación.";
+
+    }
+
+    else if(
+        timeFinished
+    ){
+
+        title.textContent =
+            "⏰ ¡SE ACABÓ EL TIEMPO!";
+
+
+        message.textContent =
+            "¡Buen intento! Vuelve a jugar e intenta conseguir 100 puntos o más.";
+
+    }
+
+    else{
+
+        title.textContent =
+            "💥 ¡PERDISTE!";
+
+
+        message.textContent =
+            "Cuidado con la comida chatarra y no dejes escapar los alimentos saludables.";
+
+    }
+
+}
+
+
+/* =========================================
+   BUCLE PRINCIPAL
+========================================= */
+
+function gameLoop(
+    timestamp
+){
+
+    if(
+        !gameRunning
+    ){
+
+        return;
+
+    }
+
+
+    /* FONDO */
+
+    drawKitchenBackground();
+
+
+    /* CREAR ALIMENTOS */
+
+    if(
+        timestamp -
+        lastSpawn >
+        spawnInterval
+    ){
+
+        spawnFood();
+
+
+        lastSpawn =
+            timestamp;
+
+
+        /*
+           Aumentar dificultad
+        */
+
+        if(
+            spawnInterval > 330
+        ){
+
+            spawnInterval -= 4;
+
+        }
+
+    }
+
+
+    /* ACTUALIZAR */
+
+    updateObjects();
+
+    updateParticles();
+
+
+    /* DIBUJAR ALIMENTOS */
+
+    objects.forEach(
+        function(obj){
+
+            drawObject(obj);
+
+        }
+    );
+
+
+    /* PARTÍCULAS */
+
+    drawParticles();
+
+
+    /* CUCHILLO */
+
+    drawSlash();
+
+
+    /* COMBO */
+
+    if(
+        comboTimer > 0
+    ){
+
+        comboTimer--;
+
+    }
+    else{
+
+        combo = 0;
+
+        document.getElementById(
+            "combo"
+        ).textContent = "";
+
+    }
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+
+/* =========================================
+   EVITAR MENÚ CONTEXTUAL
+========================================= */
+
+document.addEventListener(
+    "contextmenu",
+    function(event){
+
+        event.preventDefault();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
